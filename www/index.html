@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Land Lines - Chrome Experiments</title>
+    <title>Land Lines</title>
 
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
@@ -414,10 +414,13 @@
        
 
         <div id="app">
-            <p id="header">Land Lines</p>
-            <p id="desc">Start with a line, let the planet complete the picture.</p>
-            <a class="app-button" href="javascript:void(0)" id="button-draw">Draw</a>
-            <a class="app-button" href="javascript:void(0)" id="button-drag">Drag</a>
+            <p id="header">流域佇佗位？DRAW</p>
+            <p id="desc">淡水河由大漢溪、新店溪和基隆河等匯集至淡水河本流而成，這些河流流過的地方，就是「淡水河流域」。
+
+                ________（陪伴怪獸名字）將施展神奇魔法，讓你用手指頭畫畫線、就能在淡水河流域中旅行！
+                </p>
+            <a class="app-button" href="javascript:void(0)" id="button-draw">Let’s Go!</a>
+            <!-- <a class="app-button" href="javascript:void(0)" id="button-drag">Drag</a> -->
             <p id="error"></p>
             <div id="video_container"><div id="video"></div></div>
         </div>
@@ -446,8 +449,12 @@
 
     <a href="javascript:void(0)"><img id="overlay-open" src="https://storage.googleapis.com/navigator-media-usa/media/connected_line/v2/site/www/img/question-mark@2x.png" width="25"></img></a>
 
-    <a href="https://www.chromeexperiments.com/" target="ce">
+    <!-- <a href="https://www.chromeexperiments.com/" target="ce">
         <img id="chrome-experiment" src="https://storage.googleapis.com/navigator-media-usa/media/connected_line/v2/site/www/img/CE_badge@2x.png"></img>
+    </a> -->
+
+    <a href="https://www.chromeexperiments.com/" target="ce">
+        <img id="chrome-experiment" src="./B-2_monster_C_basic.gif"></img>
     </a>
 
     <div id="about-overlay">
@@ -566,7 +573,7 @@
             document.getElementById('video_container').style.display = 'block';
         } else {
             document.getElementById('button-draw').style.visibility = 'visible';
-            document.getElementById('button-drag').style.visibility = 'visible';
+            //document.getElementById('button-drag').style.visibility = 'visible';
         }
         
         window.requestAnimationFrame(animate);
@@ -937,7 +944,7 @@
     document.getElementById('overlay-close').onclick = hideAboutOverlay;
 
     document.getElementById('button-draw').onclick = loadAppDraw;
-    document.getElementById('button-drag').onclick = loadAppDrag;
+    //document.getElementById('button-drag').onclick = loadAppDrag;
     document.getElementById('nav-draw').onclick = loadAppDraw;
     document.getElementById('nav-drag').onclick = loadAppDrag;
 
