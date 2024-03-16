@@ -38,7 +38,7 @@
     m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
     })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
 
-    ga('create', 'UA-86371440-1', 'auto');
+    ga('create', 'UA-xxxxxxxx-1', 'auto');
     ga('send', 'pageview');
     </script>
     <style>
@@ -122,7 +122,7 @@
 
         position: absolute;
         display: table;
-        //table-layout: fixed;
+        /*table-layout: fixed;*/
         width: 100%;
         height: 100%;
 
@@ -210,6 +210,39 @@
         text-align: center;
         background-color: rgba(0, 0, 0, 0.25);
     }
+
+    .app-button {
+        border: none; /* Remove border */
+        background-color: #4CAF50; /* Set to green background */
+        display: block;
+        width: 225px; /* Adjust the width as needed */
+        height: 50px; /* Adjust the height as needed */
+        font-size: 16px; /* Adjust the font size as needed */
+        color: white; /* Text color white */
+        text-align: center;
+        line-height: 50px; /* Center the text vertically */
+        margin: 20px auto; /* Increase margin to add space around the button */
+        border-radius: 25px; /* Fully rounded corners for pill effect */
+        box-shadow: 0 1px #999; /* Shadow effect for depth */
+        visibility: visible; /* Make sure the button is visible */
+        outline: none; /* Remove focus outline */
+        cursor: pointer; /* Change cursor to pointer on hover */
+        transition: background-color 0.3s, box-shadow 0.2s; /* Smooth transition for hover effect */
+    }
+
+    .app-button:hover 
+    {
+        background-color: #45a049; /* Darker green on hover */
+        box-shadow: 0 2px #666; /* Adjust the shadow for a pressed effect */
+    }
+
+    .app-button:active 
+    {
+        background-color: #3e8e41; /* Even darker green when the button is clicked */
+        box-shadow: 0 1px #666; /* Small shadow for a 'pressed' effect */
+        transform: translateY(1px); /* Slight movement to simulate pressing */
+    }
+/* 
     .app-button {
         border: 1px solid white;
         background-color: rgba(0, 0, 0, 0.25);
@@ -221,9 +254,9 @@
         vertical-align: middle;
         margin: 0 auto;
         padding-top: 10px;
-        margin-bottom: 10px;
+        margin-bottom: 20px;
         visibility:hidden;
-    }
+    } */
     .app-button:last-child {
         margin-bottom: 50px;
     }
@@ -403,23 +436,34 @@
         }
     }
 
+    #text-background 
+    {
+        background-image: url('img/Rectangle-bg.png'); /* Update the path to where your image is stored */
+        background-size: 100% 100%; /* This will stretch the image to fit the div */
+        background-repeat: no-repeat;
+        padding: 10px; /* Adjust padding as necessary */
+        margin-bottom: 30px; 
+    }
+
+
+
     </style>
 </head>
 
-<body>
-
-   
+<body>   
     <canvas id="bg">Your browser doesn't support canvas</canvas>
+
     <div id="landing-container">
-       
-
         <div id="app">
-            <p id="header">流域佇佗位？DRAW</p>
-            <p id="desc">淡水河由大漢溪、新店溪和基隆河等匯集至淡水河本流而成，這些河流流過的地方，就是「淡水河流域」。<br>
-
-                ________（陪伴怪獸名字）將施展神奇魔法，讓你用手指頭畫畫線、就能在淡水河流域中旅行！
-                </p>
-            <a class="app-button" href="javascript:void(0)" id="button-draw">Let’s Go!</a>
+            <p id="header">流域佇佗位？</p>
+            <p id="desc">淡水河由大漢溪、新店溪和基隆河等匯集至淡水河本流而成，<br>這些河流流過的地方，就是「淡水河流域」。<br><br>
+            <div id="text-background">
+                西西將施展神奇魔法，讓你用手指頭畫畫線、<br>
+                就能在淡水河流域中旅行！Let’s Go!<br>
+                請依指示滑動開始！<br>
+            </div>
+                
+            <a class="app-button" href="javascript:void(0)" id="button-draw">開始</a>
             <!-- <a class="app-button" href="javascript:void(0)" id="button-drag">Drag</a> -->
             <p id="error"></p>
             <div id="video_container"><div id="video"></div></div>
@@ -442,20 +486,23 @@
         <!-- <a href="javascript:void(0)" id="nav-draw" class="bigger" >Draw</a> | <a href="javascript:void(0)" id="nav-drag" >Drag</a> -->
     </div>
 
-    <div id="privacy-terms">
+
+
+    <!-- <div id="privacy-terms">
         <a target="_blank" href="https://www.google.com/policies/privacy/">Privacy</a> &
         <a target="_blank" href="https://www.google.com/policies/terms/">Terms</a>
-    </div>
+    </div> -->
 
-    <a href="javascript:void(0)"><img id="overlay-open" src="https://storage.googleapis.com/navigator-media-usa/media/connected_line/v2/site/www/img/question-mark@2x.png" width="25"></img></a>
+    <!-- <a href="javascript:void(0)"><img id="overlay-open" src="https://storage.googleapis.com/navigator-media-usa/media/connected_line/v2/site/www/img/question-mark@2x.png" width="25"></img></a> -->
 
     <!-- <a href="https://www.chromeexperiments.com/" target="ce">
         <img id="chrome-experiment" src="https://storage.googleapis.com/navigator-media-usa/media/connected_line/v2/site/www/img/CE_badge@2x.png"></img>
     </a> -->
 
-    <a href="https://www.chromeexperiments.com/" target="ce">
-        <img id="chrome-experiment" src="./B-2_monster_C_basic.gif"></img>
-    </a>
+
+    <img id="chrome-experiment" src="./img/C-1_monsterD_DREW&DRAG.gif"></img>
+
+    
 
     <div id="about-overlay">
         <div id="about-overlay-content">
@@ -492,7 +539,7 @@
             <br><br>
         </div>
     </div>
-    <a href="javascript:void(0)"><img id="overlay-close" src="https://storage.googleapis.com/navigator-media-usa/media/connected_line/v2/site/www/img/close@2x.png" width="25"></img></a>
+    <!-- <a href="javascript:void(0)"><img id="overlay-close" src="https://storage.googleapis.com/navigator-media-usa/media/connected_line/v2/site/www/img/close@2x.png" width="25"></img></a> -->
 
     <script src="/js/third_party/dat.gui.min.js"></script>
     <script src="/draw/js/Utils.js"></script>
@@ -589,7 +636,7 @@
     // Store the backgrounds in localStorag as they're used, and use those values
     // to filter out the bgList to only use new ones
     //var bgList = ['1006', '1018', '1102', '1240', '1353', '1463', '5586', '6578', '1432', '1495', '1556', '1559', '1567', '1578', '1584', '1617', '1653', '1834', '5425'];
-    var bgList = ['xindian', 'tamsui2', 'takoham'];
+    var bgList = ['xindian', 'tamsui2', 'takoham', 'figma_map_bg_1'];
     var filteredList = bgList.slice(0);
     var usedBGs = localStorage.getItem('usedBGs') || '';
     usedBGs = usedBGs.split(',');
@@ -682,14 +729,14 @@
     function loadApp() {
         var nav = document.getElementById('nav');
         if (!nav.style.display)
-            show(nav);
+            hide(nav);
 
         // hide(document.getElementById('gradient-top'));
         // hide(document.getElementById('gradient-bottom'));
         hide(document.getElementById('landing-container'));
         hide(document.getElementById('bg'));
         hide(document.getElementById('chrome-experiment'));
-        hide(document.getElementById('privacy-terms'));
+        //hide(document.getElementById('privacy-terms'));
 
         if (gui) {
             gui.destroy();
@@ -941,13 +988,13 @@
     document.getElementById('draw-container').style.display = 'none';
     document.getElementById('drag-container').style.display = 'none';
 
-    document.getElementById('overlay-open').onclick = showAboutOverlay;
-    document.getElementById('overlay-close').onclick = hideAboutOverlay;
+    //document.getElementById('overlay-open').onclick = showAboutOverlay;
+    //document.getElementById('overlay-close').onclick = hideAboutOverlay;
 
     document.getElementById('button-draw').onclick = loadAppDraw;
     //document.getElementById('button-drag').onclick = loadAppDrag;
-    document.getElementById('nav-draw').onclick = loadAppDraw;
-    document.getElementById('nav-drag').onclick = loadAppDrag;
+    document.getElementById('nav-draw').onclick = loadAppDraw; // hided 
+    document.getElementById('nav-drag').onclick = loadAppDrag; // hided
 
     // document.getElementById('app').onmousemove = updateBackgroundMouse;
     document.getElementById('landing-container').onmousemove = updateBackgroundMouse;
