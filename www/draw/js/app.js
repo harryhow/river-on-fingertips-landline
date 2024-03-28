@@ -554,7 +554,13 @@ var polylineCount = [];
 
 function loadNextTree() {
 
-    readTextFile('https://storage.googleapis.com/navigator-media-usa/media/connected_line/v2/site/www/draw/data/' + vpTreeToLoad + '.json', loadVPTree);
+    //readTextFile('https://storage.googleapis.com/navigator-media-usa/media/connected_line/v2/site/www/draw/data/' + vpTreeToLoad + '.json', loadVPTree);
+    readTextFile('https://storage.googleapis.com/river_on_finger_tips_landline/vp-tree-construct.json', loadVPTree);
+    //readTextFile('./data/vp-tree-loaded-0.json', loadVPTree);
+    //readTextFile('./data/vp-tree-construct.json', loadVPTree);
+    //vp-tree-loaded-0
+    //vp-tree-construct
+
 }
 
 Array.prototype.append = function(array) {
@@ -580,6 +586,7 @@ function parseLoadVPTree() {
 
     //------------------------------------------------ do some work 
     var polylinePoints = jsonData["polylines"];
+    //console.log(polylinePoints);
 
     for (j = start; j < end; j++) {
         dataobj.push(polylinePoints[j]);
@@ -606,12 +613,17 @@ function parseLoadVPTree() {
     //------------------------------------------------ 
     if (end === jsonData["polylines"].length) { // we did it! 
 
+       //console.log(jsonData); // harry: for understanding data
         parseWorkToDo = false;
         polylineCount.push(polylinePoints.length);
         vpTreeString = eval('(' + jsonData["vpTree"] + ')');
         vptrees.push(VPTreeFactory.load(polylinesTemp, dist, vpTreeString));
         vpTreeToLoad++;
-        if (vpTreeToLoad < 5) {
+
+        // if (vpTreeToLoad < 5) {
+        //     window.setTimeout(loadNextTree, 10000);
+        // }
+        if (vpTreeToLoad < 1) {
             window.setTimeout(loadNextTree, 10000);
         }
     }
@@ -629,8 +641,9 @@ function loadVPTree(code, data) {
 }
 
 var vpTreeToLoad = 0;
-readTextFile('https://storage.googleapis.com/navigator-media-usa/media/connected_line/v2/site/www/draw/data/' + vpTreeToLoad + '.json', loadVPTree);
-
+//readTextFile('https://storage.googleapis.com/navigator-media-usa/media/connected_line/v2/site/www/draw/data/' + vpTreeToLoad + '.json', loadVPTree);
+readTextFile('https://storage.googleapis.com/river_on_finger_tips_landline/vp-tree-construct.json', loadVPTree);
+//readTextFile('./data/vp-tree-loaded-0.json', loadVPTree);
 //----------------------------------------------------------
 
 
@@ -639,12 +652,23 @@ readTextFile('https://storage.googleapis.com/navigator-media-usa/media/connected
 // from 0 - 1521 instead of using the id as the filename
 var metadata = {};
 var metadataIDList = [];
-readTextFile('https://storage.googleapis.com/navigator-media-usa/media/connected_line/v2/site/www/draw/metadata-id-list.json', function(code, data) {
+// readTextFile('https://storage.googleapis.com/navigator-media-usa/media/connected_line/v2/site/www/draw/metadata-id-list.json', function(code, data) {
+//     metadataIDList = JSON.parse(data);
+// });
+// readTextFile('https://storage.googleapis.com/navigator-media-usa/media/connected_line/v2/site/www/draw/metadata-converted.json', function(code, data) {
+//     metadata = JSON.parse(data);
+// });
+
+/// harry: test file and loaded from local
+
+readTextFile('https://storage.googleapis.com/river_on_finger_tips_landline/metadata-id-list.json', function(code, data) {
     metadataIDList = JSON.parse(data);
 });
-readTextFile('https://storage.googleapis.com/navigator-media-usa/media/connected_line/v2/site/www/draw/metadata-converted.json', function(code, data) {
+readTextFile('https://storage.googleapis.com/river_on_finger_tips_landline/metadata-converted.json', function(code, data) {
     metadata = JSON.parse(data);
 });
+
+
 
 
 //-------------------------------------------------------------------
@@ -1308,7 +1332,7 @@ stage.mouseup = stage.mouseupoutside = stage.touchend = stage.touchendoutside = 
     }
     // Pull ID from info obj, which actually stores IDs starting from 0
     var id = infoobj[results[0].i][0];
-    //console.log("loading metadata for id " + id);
+    console.log("loading metadata for id " + id);
     // Convert filename-based ID to "real" ID from spreadsheet
 
 
@@ -1329,6 +1353,7 @@ stage.mouseup = stage.mouseupoutside = stage.touchend = stage.touchendoutside = 
     if (isMobile) {
         if (myGui.loadFromCloud)
             url = 'https://storage.googleapis.com/navigator-media-usa/media/draw/v3/900/';
+            
         else
             url = '/';
 
@@ -1344,10 +1369,12 @@ stage.mouseup = stage.mouseupoutside = stage.touchend = stage.touchendoutside = 
         resolutionScale = 1800 / 1260;
     }
 
+    // url = 'https://storage.googleapis.com/river_on_finger_tips_landline/';
+    url = './landdata/';
 
     PIXI.loader.reset();
 
-    //console.log("loading num : " + infoobj[results[0].i][0]);
+    console.log("loading num : " + infoobj[results[0].i][0]);
 
     var texture = PIXI.Texture.fromImage(url + '' + infoobj[results[0].i][0] + '.jpg');
     var sprite = new PIXI.Sprite(texture);
@@ -1454,35 +1481,39 @@ function animate() {
     //      console.log(requestStatus);
     // }
 
-    if (vptrees.length === 0) {
-        // we are preloading, let's do some math. 
-        var pctData = 0.0;
-        var pctMetaData = 0.0;
-        var pctParsed = 0.0;
+    ////////////////////////////////////////////////
+    ////////////////////////////////////////////////
+    // HARRY comment out
+    // if (vptrees.length === 0) {
+    //     // we are preloading, let's do some math. 
+    //     var pctData = 0.0;
+    //     var pctMetaData = 0.0;
+    //     var pctParsed = 0.0;
 
-        if ("data/0.json" in requestStatus) {
-            pctData = requestStatus["data/0.json"];
-        }
+    //     if ("data/0.json" in requestStatus) {
+    //         pctData = requestStatus["data/0.json"];
+    //     }
 
-        if ("metadata-id-list.json" in requestStatus) {
-            pctMetaData = requestStatus["metadata-id-list.json"];
-        }
+    //     if ("metadata-id-list.json" in requestStatus) {
+    //         pctMetaData = requestStatus["metadata-id-list.json"];
+    //     }
 
-        if (parseWorkToDo) {
-            pctParsed = dataParseCount / jsonData["polylines"].length;
-        }
+    //     if (parseWorkToDo) {
+    //         pctParsed = dataParseCount / jsonData["polylines"].length;
+    //     }
 
-        var preloadPct = pctData * 0.7 + pctMetaData * 0.1 + pctParsed * 0.2;
+    //     var preloadPct = pctData * 0.7 + pctMetaData * 0.1 + pctParsed * 0.2;
 
 
-        if (document.getElementById("progress") != null) {
-            document.getElementById("progress").innerHTML = "Loading</br>" + Math.round(preloadPct * 100) + " / 100";
-        }
-        //document.getElementById("progress").innerHTML = "Loading " + preloadPct;
-        //console.log("PRELOAD " + pctData + " " + pctMetaData + " " + pctParsed + " " + preloadPct);
+    //     if (document.getElementById("progress") != null) {
+    //         document.getElementById("progress").innerHTML = "Loading</br>" + Math.round(preloadPct * 100) + " / 100";
+    //     }
+    //     //document.getElementById("progress").innerHTML = "Loading " + preloadPct;
+    //     //console.log("PRELOAD " + pctData + " " + pctMetaData + " " + pctParsed + " " + preloadPct);
 
-    }
-
+    // }
+    ////////////////////////////////////////////////
+    ////////////////////////////////////////////////
 
     parseLoadVPTree(); // always try to parse ! 
 
