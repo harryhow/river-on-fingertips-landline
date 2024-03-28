@@ -555,9 +555,9 @@ var polylineCount = [];
 function loadNextTree() {
 
     //readTextFile('https://storage.googleapis.com/navigator-media-usa/media/connected_line/v2/site/www/draw/data/' + vpTreeToLoad + '.json', loadVPTree);
-    readTextFile('https://storage.googleapis.com/river_on_finger_tips_landline/vp-tree-construct.json', loadVPTree);
+    //readTextFile('https://storage.googleapis.com/river_on_finger_tips_landline/vp-tree-construct.json', loadVPTree);
     //readTextFile('./data/vp-tree-loaded-0.json', loadVPTree);
-    //readTextFile('./data/vp-tree-construct.json', loadVPTree);
+    readTextFile('./data/vp-tree-construct.json', loadVPTree);
     //vp-tree-loaded-0
     //vp-tree-construct
 
@@ -642,8 +642,8 @@ function loadVPTree(code, data) {
 
 var vpTreeToLoad = 0;
 //readTextFile('https://storage.googleapis.com/navigator-media-usa/media/connected_line/v2/site/www/draw/data/' + vpTreeToLoad + '.json', loadVPTree);
-readTextFile('https://storage.googleapis.com/river_on_finger_tips_landline/vp-tree-construct.json', loadVPTree);
-//readTextFile('./data/vp-tree-loaded-0.json', loadVPTree);
+//readTextFile('https://storage.googleapis.com/river_on_finger_tips_landline/vp-tree-construct.json', loadVPTree);
+readTextFile('./data/vp-tree-loaded-0.json', loadVPTree);
 //----------------------------------------------------------
 
 
@@ -661,10 +661,10 @@ var metadataIDList = [];
 
 /// harry: test file and loaded from local
 
-readTextFile('https://storage.googleapis.com/river_on_finger_tips_landline/metadata-id-list.json', function(code, data) {
+readTextFile('./data/metadata-id-list.json', function(code, data) {
     metadataIDList = JSON.parse(data);
 });
-readTextFile('https://storage.googleapis.com/river_on_finger_tips_landline/metadata-converted.json', function(code, data) {
+readTextFile('./data/metadata-converted.json', function(code, data) {
     metadata = JSON.parse(data);
 });
 
