@@ -319,7 +319,7 @@
         left: 0;
         padding-left: 1em;
         padding-bottom: 1em;
-        width: 250px;
+        width: 0px;
     }
     @media (max-width: 400px) {
         #chrome-experiment {
@@ -436,14 +436,7 @@
         }
     }
 
-    #text-background 
-    {
-        background-image: url('img/Rectangle-bg.png'); /* Update the path to where your image is stored */
-        background-size: 100% 100%; /* This will stretch the image to fit the div */
-        background-repeat: no-repeat;
-        padding: 10px; /* Adjust padding as necessary */
-        margin-bottom: 30px; 
-    }
+
 
 
 
@@ -455,15 +448,11 @@
 
     <div id="landing-container">
         <div id="app">
-            <p id="header">流域佇佗位？</p>
-            <p id="desc">淡水河由大漢溪、新店溪和基隆河等匯集至淡水河本流而成，<br>這些河流流過的地方，就是「淡水河流域」。<br><br>
-            <div id="text-background">
-                西西將施展神奇魔法，讓你用手指頭畫畫線、<br>
-                就能在淡水河流域中旅行！Let’s Go!<br>
-                請依指示滑動開始！<br>
-            </div>
+            <p id="header"></p>
+            <p id="desc">
+ 
                 
-            <a class="app-button" href="javascript:void(0)" id="button-draw">開始</a>
+            <!-- <a class="app-button" href="javascript:void(0)" id="button-draw">開始</a> -->
             <!-- <a class="app-button" href="javascript:void(0)" id="button-drag">Drag</a> -->
             <p id="error"></p>
             <div id="video_container"><div id="video"></div></div>
@@ -500,7 +489,7 @@
     </a> -->
 
 
-    <img id="chrome-experiment" src="./img/C-1_monsterD_DREW&DRAG.gif"></img>
+    <img id="chrome-experiment" src=""></img>
 
     
 
@@ -574,6 +563,7 @@
     };
     var myGui = new Gui();
 
+    //console.log(window.location.hash);
     // if user has #dev has, enable dev mode
     var isDevMode = (window.location.hash.indexOf('dev') == -1) ? false : true;
 
@@ -619,10 +609,11 @@
             document.getElementById('error').style.display = 'block';
             document.getElementById('video_container').style.display = 'block';
         } else {
-            document.getElementById('button-draw').style.visibility = 'visible';
+            //document.getElementById('button-draw').style.visibility = 'visible';
             //document.getElementById('button-drag').style.visibility = 'visible';
         }
         
+        loadAppDraw();
         window.requestAnimationFrame(animate);
 
     };

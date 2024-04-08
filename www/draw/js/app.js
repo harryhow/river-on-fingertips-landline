@@ -758,8 +758,22 @@ var Gui = function() {
 var myGui = new Gui();
 
 var isDevMode = (window.location.hash.indexOf('dev') == -1) ? false : true;
+var imgDataSwitch = window.location.hash; // get url hash path to switch between image data folder
+var imgDataUrl = '';
+
 
 window.onload = function() {
+
+    //console.log(imgDataSwitch);
+
+    console.log(imgDataSwitch);
+    if (imgDataSwitch === '#draw-a') {
+        imgDataUrl = './landdata/a/';
+    }
+    else if (imgDataSwitch === '#draw-b') {
+        imgDataUrl = './landdata/b/';
+    }
+    
 
     if (isDevMode) {
         var gui = new dat.GUI();
@@ -1325,7 +1339,7 @@ stage.mouseup = stage.mouseupoutside = stage.touchend = stage.touchendoutside = 
 
     }
 
-    //console.log("smallestDiff " + smallestDiff + " results d " + results[0].d);
+    console.log("smallestDiff " + smallestDiff + " results d " + results[0].d);
 
     if (results[0].d > myGui.badMatchThreshold) {
         drawingAlphaTarget = 0.0; // fade out weird stuff 
@@ -1370,7 +1384,11 @@ stage.mouseup = stage.mouseupoutside = stage.touchend = stage.touchendoutside = 
     }
 
     // url = 'https://storage.googleapis.com/river_on_finger_tips_landline/';
-    url = './landdata/';
+
+    if (imgDataUrl)
+        url = imgDataUrl;
+    else
+        url = './landdata/';
 
     PIXI.loader.reset();
 
