@@ -1,4 +1,9 @@
 [[redirects]]
-  from = "/*"
+  from = "/draw-a"
+  to = "/"
+  status = 200
+
+[[redirects]]
+  from = "/draw-b"
   to = "/"
   status = 200
