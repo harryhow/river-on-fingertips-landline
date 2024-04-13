@@ -580,7 +580,43 @@
     }
 
 
+    var imgDataSwitch = window.location.hash; // get url hash path to switch between image data folder
+    var imgDataUrl = '';
+    var drawOrDrag = '';
+    
+
     window.onload = function() {
+
+        
+    console.log("index:" + imgDataSwitch);
+
+
+    switch (imgDataSwitch) {
+        case '#draw-a':
+            imgDataUrl = './landdata/a/';
+            drawOrDrag = 'draw';
+            break;
+        case '#draw-b':
+            imgDataUrl = './landdata/b/';
+            drawOrDrag = 'draw';
+            break;
+        case '#draw-c':
+            imgDataUrl = './landdata/c/';
+            drawOrDrag = 'draw';
+            break;
+        case '#drag-a':
+            imgDataUrl = './landdata/a/';
+            drawOrDrag = 'drag';
+            break;
+        case '#drag-b':
+            imgDataUrl = './landdata/b/';
+            drawOrDrag = 'drag';
+            break;
+        case '#drag-c':
+            imgDataUrl = './landdata/c/';
+            drawOrDrag = 'drag';
+            break;
+    }
         
         if (isDevMode) {
 
@@ -613,7 +649,13 @@
             //document.getElementById('button-drag').style.visibility = 'visible';
         }
         
-        loadAppDraw();
+        // launch the app by drawing or dragging
+        if (drawOrDrag == 'draw') {
+            loadAppDraw();
+        } else if (drawOrDrag == 'drag') {
+            loadAppDrag();
+        }
+       
         window.requestAnimationFrame(animate);
 
     };

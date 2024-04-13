@@ -764,14 +764,16 @@ var imgDataUrl = '';
 
 window.onload = function() {
 
-    //console.log(imgDataSwitch);
-
     console.log(imgDataSwitch);
+
     if (imgDataSwitch === '#draw-a') {
         imgDataUrl = './landdata/a/';
     }
     else if (imgDataSwitch === '#draw-b') {
         imgDataUrl = './landdata/b/';
+    }
+    else if (imgDataSwitch === '#draw-c') {
+        imgDataUrl = './landdata/c/';
     }
     
 
