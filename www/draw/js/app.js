@@ -762,18 +762,34 @@ var imgDataSwitch = window.location.hash; // get url hash path to switch between
 var imgDataUrl = '';
 
 
+// ++ test for hash change
+function locationHashChanged() {
+    if (location.hash === "#draw-a") {
+      console.log("onhashchange: draw-a");
+    }
+    else if (location.hash === "#draw-b") {
+      console.log("onhashchange: draw-b");
+    }
+    else if (location.hash === "#draw-c") { 
+        console.log("onhashchange: draw-c");
+    }
+  }
+
+window.onhashchange = locationHashChanged;
+// --
+
 window.onload = function() {
 
     console.log(imgDataSwitch);
 
     if (imgDataSwitch === '#draw-a') {
-        imgDataUrl = './landdata/a/';
+        imgDataUrl = 'landdata/a/';
     }
     else if (imgDataSwitch === '#draw-b') {
-        imgDataUrl = './landdata/b/';
+        imgDataUrl = 'landdata/b/';
     }
     else if (imgDataSwitch === '#draw-c') {
-        imgDataUrl = './landdata/c/';
+        imgDataUrl = 'landdata/c/';
     }
     
 
