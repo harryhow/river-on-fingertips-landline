@@ -797,6 +797,11 @@
 
         var draw = document.getElementById('draw-container');
         var drag = document.getElementById('drag-container');
+
+         // Listen for the iframe to load completely before sending the message
+         draw.onload = function() {
+            draw.contentWindow.postMessage(imgDataUrl, '*');
+        };
         
         hide(drag);
         show(draw);
