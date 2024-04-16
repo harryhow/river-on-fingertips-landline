@@ -396,6 +396,7 @@ var Gui = function() {
 };
 var myGui = new Gui();
 
+var imgDataSwitch = window.location.hash; // get url hash path to switch between image data folder
 var isDevMode = (window.location.hash.indexOf('dev') == -1) ? false : true;
 
 var guiSettings = {
@@ -458,6 +459,18 @@ var guiSettings = {
 
 
 window.onload = function() {
+
+    console.log("drag-app.js: " + imgDataSwitch);
+
+    if (imgDataSwitch === '#drag-a') {
+        imgDataUrl = 'landdata/a_takoham/';
+    }
+    else if (imgDataSwitch === '#draw-b') {
+        imgDataUrl = 'landdata/b_xindian/';
+    }
+    else if (imgDataSwitch === '#drag-c') {
+        imgDataUrl = 'landdata/c_keelung/';
+    }
 
     if (isDevMode) {
         var gui = new dat.GUI({
