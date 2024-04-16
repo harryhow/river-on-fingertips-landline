@@ -759,7 +759,7 @@ var myGui = new Gui();
 
 var isDevMode = (window.location.hash.indexOf('dev') == -1) ? false : true;
 var imgDataSwitch = window.location.hash; // get url hash path to switch between image data folder
-var imgDataUrl = '';
+
 
 
 // ++ test for hash change
@@ -780,7 +780,7 @@ window.onhashchange = locationHashChanged;
 
 window.onload = function() {
 
-    console.log(imgDataSwitch);
+    console.log("draw-app.js: " + imgDataSwitch);
 
     if (imgDataSwitch === '#draw-a') {
         imgDataUrl = 'landdata/a_takoham/';
