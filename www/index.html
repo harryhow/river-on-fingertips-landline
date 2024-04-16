@@ -547,7 +547,6 @@
     * See the License for the specific language governing permissions and
     * limitations under the License.
     */
-
     
     var activeApp = '';
 
@@ -580,38 +579,15 @@
         isWebglErrorMode = true;
     }
 
-    // ++ test for hash change
-    function locationHashChanged() {
-        if (location.hash === "#draw-a") {
-        console.log("index: onhashchange: draw-a");
-        }
-        else if (location.hash === "#draw-b") {
-        console.log("index: onhashchange: draw-b");
-        }
-        else if (location.hash === "#draw-c") { 
-            console.log("index: onhashchange: draw-c");
-        }
-    }
-
-    window.onhashchange = locationHashChanged;
-    // --
-
-    const receivedMessag = "";
-    // -- add event listener
     window.addEventListener('message', (event) => {
 
-    receivedMessage = event.data;
+    const receivedMessage = event.data;
     console.log('Received message from parent:', receivedMessage);
 
     }, false);
 
-    // ++ add event listener
 
-
-
-
-
-    var imgDataSwitch = receivedMessage; // get url hash path to switch between image data folder
+    var imgDataSwitch = window.location.hash; // get url hash path to switch between image data folder
     var imgDataUrl = '';
     var drawOrDrag = '';
     
@@ -624,32 +600,32 @@
 
     switch (imgDataSwitch) {
         case '#draw-a':
+            imgDataUrl = './draw/landdata/a/';
             drawOrDrag = 'draw';
-            imgDataUrl = 'landdata/a_takoham/'
             break;
         case '#draw-b':
+            imgDataUrl = './draw/landdata/b/';
             drawOrDrag = 'draw';
-            drawOrDrag = 'landdata/b_xindian/';
             break;
         case '#draw-c':
+            imgDataUrl = './draw/landdata/c/';
             drawOrDrag = 'draw';
-            drawOrDrag = 'landdata/c_keelung/';
             break;
         case '#drag-a':
+            imgDataUrl = './landdata/a_takoham/';
             drawOrDrag = 'drag';
-            imgDataUrl = 'landdata/a_takoham/'
             break;
         case '#drag-b':
+            imgDataUrl = './landdata/b_xindian/';
             drawOrDrag = 'drag';
-            drawOrDrag = 'landdata/b_xindian/';
             break;
         case '#drag-c':
+            imgDataUrl = './landdata/c_keelung/';
             drawOrDrag = 'drag';
-            drawOrDrag = 'landdata/c_keelung/';
             break;
         default:
+            imgDataUrl = './landdata/a_takoham/';
             drawOrDrag = 'draw';
-            imgDataUrl = 'landdata/a_takoham/'
             break;
     }
         
@@ -821,13 +797,15 @@
 
         var draw = document.getElementById('draw-container');
         var drag = document.getElementById('drag-container');
-
         
         hide(drag);
         show(draw);
         drag.src = '';
         setTimeout(function(){ draw.src = '/draw' + window.location.hash; }, 250);
 
+        draw.onload = function() {
+            draw.style.visibility = 'visible';
+        }
 
         document.getElementById('nav-draw-inner').className = 'active';
         document.getElementById('nav-drag-inner').className = 'inactive';

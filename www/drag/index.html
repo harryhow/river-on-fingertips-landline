@@ -114,30 +114,6 @@
         <img id="instruction">
     </div>
 
-    <script>
-        // ++ test for hash change
-        function locationHashChanged() {
-            if (location.hash === "#draw-a") {
-            console.log("index drag: onhashchange: draw-a");
-            }
-            else if (location.hash === "#draw-b") {
-            console.log("index drag: onhashchange: draw-b");
-            }
-            else if (location.hash === "#draw-c") { 
-                console.log("index drag: onhashchange: draw-c");
-            }
-        }
-        window.onhashchange = locationHashChanged;
-        // --
-
-        window.onload = function() {
-            var imgDataSwitch = window.location.hash; // get url hash path to switch between image data folder
-            var imgDataUrl = '';
-            var drawOrDrag = '';
-            console.log("index drag: " + imgDataSwitch);
-        }
-    </script>
-
     <script src="js/angleLines.js"></script>       <!-- heavy ! -->
     <script src="/js/third_party/Smooth-0.1.7.js"></script>  
     <script src="js/third_party/point.min.js"></script> 
