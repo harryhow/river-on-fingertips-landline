@@ -113,6 +113,16 @@
     </div>
 
     <script>
+
+        window.addEventListener('message', function(event) {
+            if (event.origin !== "https://2024-fingertips-on-river.netlify.app/") {
+                console.log("Received message from unauthorized origin:", event.origin);
+                return;
+            }
+            console.log('Received:', event.data); // Outputs the global variable from index.html
+        }, false);
+
+
         // ++ test for hash change
         function locationHashChanged() {
             if (location.hash === "#draw-a") {

@@ -802,6 +802,11 @@
 
         var draw = document.getElementById('draw-container');
         var drag = document.getElementById('drag-container');
+
+        draw.onload = function() {
+            draw.contentWindow.postMessage(imgDataSwitch, 'https://2024-fingertips-on-river.netlify.app/');
+    };
+
         
         hide(drag);
         show(draw);
