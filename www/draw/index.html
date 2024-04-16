@@ -115,7 +115,9 @@
     <script>
 
         window.addEventListener('message', function(event) {
-            if (event.origin !== "https://2024-fingertips-on-river.netlify.app/") {
+            if (event.origin !== "https://2024-fingertips-on-river.netlify.app" 
+                || event.origin !== "https://river-on-fingertips-draw-landline.netlify.app") 
+            {
                 console.log("Received message from unauthorized origin:", event.origin);
                 return;
             }
