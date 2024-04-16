@@ -1402,12 +1402,10 @@ stage.mouseup = stage.mouseupoutside = stage.touchend = stage.touchendoutside = 
     }
 
     window.addEventListener('message', function(event) {
-        // if (event.origin !== "https://2024-fingertips-on-river.netlify.app" 
-        //     || event.origin !== "https://river-on-fingertips-draw-landline.netlify.app") 
-        // {
-        //     console.log("Received message from unauthorized origin:", event.origin);
-        //     return;
-        // }
+        if (event.origin !== "https://target-origin.com"){
+            console.log("Received message from unauthorized origin:", event.origin);
+            return;
+        }
         console.log('Received:', event.data); // Outputs the global variable from index.html
     }, false);
 
