@@ -778,20 +778,7 @@ function locationHashChanged() {
 window.onhashchange = locationHashChanged;
 // --
 
-var imgDataUrl;
-// /draw/app.js
-window.addEventListener('message', function(event) {
-    // Check the origin for security purposes
-    // if (event.origin !== "https://your-origin.com") {
-    //     console.log("Received message from unauthorized origin:", event.origin);
-    //     return;
-    // }
 
-    // Process the received imgDataUrl
-    imgDataUrl = event.data;
-    console.log('Received imgDataUrl:', imgDataUrl);
-
-}, false);
 
 
 

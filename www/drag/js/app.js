@@ -465,7 +465,7 @@ window.onload = function() {
     if (imgDataSwitch === '#drag-a') {
         imgDataUrl = 'landdata/a_takoham/';
     }
-    else if (imgDataSwitch === '#draw-b') {
+    else if (imgDataSwitch === '#drag-b') {
         imgDataUrl = 'landdata/b_xindian/';
     }
     else if (imgDataSwitch === '#drag-c') {
