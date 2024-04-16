@@ -596,10 +596,11 @@
     window.onhashchange = locationHashChanged;
     // --
 
+    const receivedMessag = "";
     // -- add event listener
     window.addEventListener('message', (event) => {
 
-    const receivedMessage = event.data;
+    receivedMessage = event.data;
     console.log('Received message from parent:', receivedMessage);
 
     }, false);
