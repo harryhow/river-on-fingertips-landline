@@ -108,35 +108,9 @@
     </div>
 
     <div id="loading">
-        <div id="progress">Loading</div>
+        <div id="progress">載入中</div>
         <img id="instruction">
     </div>
-
-    <script>
-
-        // ++ test for hash change
-        function locationHashChanged() {
-            if (location.hash === "#draw-a") {
-            console.log("index draw: onhashchange: draw-a");
-            }
-            else if (location.hash === "#draw-b") {
-            console.log("index draw: onhashchange: draw-b");
-            }
-            else if (location.hash === "#draw-c") { 
-                console.log("index draw: onhashchange: draw-c");
-            }
-        }
-        window.onhashchange = locationHashChanged;
-        // --
-
-        window.onload = function() {
-            var imgDataSwitch = window.location.hash; // get url hash path to switch between image data folder
-            var imgDataUrl = '';
-            var drawOrDrag = '';
-            console.log("index draw: " + imgDataSwitch);
-        }
-    </script>
-
   
     <script src="js/third_party/vptree.js"></script>
     <script src="js/dataInfo.js"></script>       <!-- heavy ! -->

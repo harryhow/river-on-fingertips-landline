@@ -596,6 +596,20 @@
     window.onhashchange = locationHashChanged;
     // --
 
+    // -- add event listener
+    window.addEventListener('message', (event) => {
+
+    const receivedMessage = event.data;
+    console.log('Received message from parent:', receivedMessage);
+
+    }, false);
+
+    // ++ add event listener
+
+
+
+
+
     var imgDataSwitch = window.location.hash; // get url hash path to switch between image data folder
     var imgDataUrl = '';
     var drawOrDrag = '';
@@ -803,20 +817,12 @@
         var draw = document.getElementById('draw-container');
         var drag = document.getElementById('drag-container');
 
-        draw.onload = function() {
-            draw.contentWindow.postMessage(imgDataSwitch, '');
-    };
-
         
         hide(drag);
         show(draw);
         drag.src = '';
         setTimeout(function(){ draw.src = '/draw' + window.location.hash; }, 250);
 
-        draw.onload = function() {
-            draw.style.visibility = 'visible';
-            draw.contentWindow.postMessage(imgDataSwitch, 'https://river-on-fingertips-draw-landline.netlify.app');
-        }
 
         document.getElementById('nav-draw-inner').className = 'active';
         document.getElementById('nav-drag-inner').className = 'inactive';

@@ -1401,13 +1401,6 @@ stage.mouseup = stage.mouseupoutside = stage.touchend = stage.touchendoutside = 
         resolutionScale = 1800 / 1260;
     }
 
-    window.addEventListener('message', function(event) {
-        if (event.origin !== "https://river-on-fingertips-draw-landline.netlify.app"){
-            console.log("Received message from unauthorized origin:", event.origin);
-            return;
-        }
-        console.log('draw Received:', event.data); // Outputs the global variable from index.html
-    }, false);
 
     // url = 'https://storage.googleapis.com/river_on_finger_tips_landline/';
 
