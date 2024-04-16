@@ -783,13 +783,13 @@ window.onload = function() {
     console.log(imgDataSwitch);
 
     if (imgDataSwitch === '#draw-a') {
-        imgDataUrl = 'landdata/a/';
+        imgDataUrl = 'landdata/a_takoham/';
     }
     else if (imgDataSwitch === '#draw-b') {
-        imgDataUrl = 'landdata/b/';
+        imgDataUrl = 'landdata/b_xindian/';
     }
     else if (imgDataSwitch === '#draw-c') {
-        imgDataUrl = 'landdata/c/';
+        imgDataUrl = 'landdata/c_keelung/';
     }
     
 
