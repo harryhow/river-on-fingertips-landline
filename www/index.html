@@ -579,12 +579,12 @@
         isWebglErrorMode = true;
     }
 
-    window.addEventListener('message', (event) => {
+    // window.addEventListener('message', (event) => {
 
-    const receivedMessage = event.data;
-    console.log('Received message from parent:', receivedMessage);
+    // const receivedMessage = event.data;
+    // console.log('Received message from parent:', receivedMessage);
 
-    }, false);
+    // }, false);
 
 
     var imgDataSwitch = window.location.hash; // get url hash path to switch between image data folder
@@ -1040,7 +1040,7 @@
     //document.getElementById('overlay-open').onclick = showAboutOverlay;
     //document.getElementById('overlay-close').onclick = hideAboutOverlay;
 
-    document.getElementById('button-draw').onclick = loadAppDraw;
+    //document.getElementById('button-draw').onclick = loadAppDraw;
     //document.getElementById('button-drag').onclick = loadAppDrag;
     document.getElementById('nav-draw').onclick = loadAppDraw; // hided 
     document.getElementById('nav-drag').onclick = loadAppDrag; // hided

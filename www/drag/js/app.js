@@ -20,19 +20,11 @@ window.mobilecheck = function() {
     return check;
 };
 
-
 var canvas = document.createElement("canvas");
-// Get WebGLRenderingContext from canvas element.
-var gl = canvas.getContext("webgl") ||
-    canvas.getContext("experimental-webgl");
-// Report the result.
-if (gl && gl instanceof WebGLRenderingContext) {;
-} else {
-
-    document.getElementById("progress").innerHTML = "This app requires</br>webGL"
-        //window.location.href = "http://www.google.com";
+var gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
+if (!gl || !(gl instanceof WebGLRenderingContext)) {
+    document.getElementById("progress").innerHTML = "This app requires</br>webGL";
 }
-
 
 //------------------------------------------------------------------------------------------------------
 // webgl line helper
@@ -51,171 +43,68 @@ PIXI.GraphicsRenderer.prototype.buildLine = function(graphicsData, webGLData) {
 };
 
 PIXI.GraphicsRenderer.prototype.buildNativeLine = function(graphicsData, webGLData) {
-
-    var i = 0;
     var points = graphicsData.points;
-
     if (points.length === 0) return;
 
-
     var verts = webGLData.points;
-    //var indices = webGLData.indices;
     var length = points.length / 2;
-    var indexCount = points.length;
-    var indexStart = verts.length / 6;
-
-    // sort color
     var color = utils.hex2rgb(graphicsData.lineColor);
     var alpha = graphicsData.lineAlpha;
     var r = color[0] * alpha;
     var g = color[1] * alpha;
     var b = color[2] * alpha;
-
     var wth = 1.0 / drawScaleAmt;
-    //console.log(wth);
-    var p1x, p1y, p2x, p2y;
 
-    if (myGui.lineShadow === true) {
-        for (i = 1; i < length; i++) {
-
-            var alpha2 = (i - 1) / length;
-            var alpha3 = i / length;
-            p1x = points[(i - 1) * 2];
-            p1y = points[(i - 1) * 2 + 1];
-
-            p2x = points[i * 2];
-            p2y = points[i * 2 + 1];
-
-            var dx = p2x - p1x;
-            var dy = p2y - p1y;
-            var dist = Math.sqrt(dx * dx + dy * dy);
-            dx /= dist;
-            dy /= dist;
-            dx *= myGui.shadowWidth * Math.pow(alpha2, 2.0) * wth;
-            dy *= myGui.shadowWidth * Math.pow(alpha2, 2.0) * wth;
-
-            alpha2 *= myGui.shadowAlpha;
-            alpha3 *= myGui.shadowAlpha;
-            verts.push(p1x, p1y);
-            verts.push(0.0, 0.0, 0.0, alpha2);
-
-
-            verts.push(p1x - dy, p1y + dx);
-            verts.push(0.0, 0.0, 0.0, 0.0);
-
-
-            verts.push(p2x, p2y);
-            verts.push(0.0, 0.0, 0.0, alpha3);
-
-
-
-            verts.push(p2x - dy, p2y + dx);
-            verts.push(0.0, 0.0, 0.0, 0.0);
-
-
-            if (i == length - 1) {
-                verts.push(p2x - dy, p2y + dx);
-                verts.push(1.0, 1.0, 1.0, 0.0);
-
-            }
-        }
-    }
-
-
-    for (i = 1; i < length; i++) {
-
-        var alpha2 = (i - 1) / length;
-        var alpha3 = i / length;
-        p1x = points[(i - 1) * 2];
-        p1y = points[(i - 1) * 2 + 1];
-
-        p2x = points[i * 2];
-        p2y = points[i * 2 + 1];
-
+    for (var i = 1; i < length; i++) {
+        var p1x = points[(i - 1) * 2];
+        var p1y = points[(i - 1) * 2 + 1];
+        var p2x = points[i * 2];
+        var p2y = points[i * 2 + 1];
         var dx = p2x - p1x;
         var dy = p2y - p1y;
         var dist = Math.sqrt(dx * dx + dy * dy);
         dx /= dist;
         dy /= dist;
-        dx *= myGui.lineWidth * Math.pow(alpha2, myGui.lineFadePower) * wth;
-        dy *= myGui.lineWidth * Math.pow(alpha2, myGui.lineFadePower) * wth;
+        var lineEffect = myGui.lineShadow ? myGui.shadowWidth : myGui.lineWidth;
+        dx *= lineEffect * Math.pow((i - 1) / length, 2.0) * wth;
+        dy *= lineEffect * Math.pow((i - 1) / length, 2.0) * wth;
+        var alpha2 = ((i - 1) / length) * myGui.shadowAlpha;
+        var alpha3 = (i / length) * myGui.shadowAlpha;
 
-        if (myGui.bFadeLine) {
-            alpha2 *= 1.0 * ((1.0 - velStopEnergy) * 0.5 + 0.5);
-            alpha3 *= 1.0 * ((1.0 - velStopEnergy) * 0.5 + 0.5);
-        } else {
-            alpha2 *= 1.0;
-            alpha3 *= 1.0;
-        }
-
-        if (i == 1) {
-            verts.push(p1x, p1y);
-            verts.push(1.0, 1.0, 1.0, alpha2);
-        }
-
+        verts.push(p1x, p1y);
+        verts.push(0.0, 0.0, 0.0, alpha2);
         verts.push(p1x - dy, p1y + dx);
-        verts.push(1.0, 1.0, 1.0, alpha2);
-
-
-
-        verts.push(p1x + dy, p1y - dx);
-        verts.push(1.0, 1.0, 1.0, alpha2);
-
-
-
+        verts.push(0.0, 0.0, 0.0, 0.0);
+        verts.push(p2x, p2y);
+        verts.push(0.0, 0.0, 0.0, alpha3);
         verts.push(p2x - dy, p2y + dx);
-        verts.push(1.0, 1.0, 1.0, alpha3);
-
-
-
-        verts.push(p2x + dy, p2y - dx);
-        verts.push(1.0, 1.0, 1.0, alpha3);
-
-
-
+        verts.push(0.0, 0.0, 0.0, 0.0);
     }
-
-
-    /*for (i = 0; i < indexCount; i++) {
-        indices.push(indexStart++);
-    }*/
-
 };
-
-PIXI.GraphicsRenderer._oldRender = PIXI.GraphicsRenderer.prototype.render;
 
 PIXI.GraphicsRenderer.prototype.render = function(graphics) {
     var renderer = this.renderer;
     var gl = renderer.gl;
-    var shader = renderer.shaderManager.plugins.primitiveShader,
-        webGLData;
+    var shader = renderer.shaderManager.plugins.primitiveShader;
+    var webGLData;
+
+
 
     if (graphics.dirty || !graphics._webGL[gl.id])
         this.updateGraphics(graphics, gl);
 
     var webGL = graphics._webGL[gl.id];
-    // This could be speeded up for sure!
     renderer.blendModeManager.setBlendMode(graphics.blendMode);
-    // var matrix = graphics.worldTransform.clone();
-    // var matrix = renderer.currentRenderTarget.projectionMatrix.clone();
-    // matrix.append(graphics.worldTransform);
+
     for (var i = 0; i < webGL.data.length; i++) {
-        if (webGL.data[i].mode === 1) {
-            webGLData = webGL.data[i];
+        webGLData = webGL.data[i];
+        if (webGLData.mode === 1) {
             renderer.stencilManager.pushStencil(graphics, webGLData, renderer);
-            // render quad..
             gl.drawElements(gl.TRIANGLE_FAN, 4, gl.UNSIGNED_SHORT, (webGLData.indices.length - 4) * 2);
             renderer.stencilManager.popStencil(graphics, webGLData, renderer);
         } else {
-            webGLData = webGL.data[i];
             shader = renderer.shaderManager.primitiveShader;
-            renderer.shaderManager.setShader(shader); //activatePrimitiveShader();
-
-            // if (Math.random(0,1) > 0.99){
-            //     console.log(renderer);
-            // }
-            //renderer.bindTexture(texTest.texture, 0);
-            //gl.bindTexture(gl.TEXTURE_2D, texTest.texture.baseTexture._glTextures[gl.id]);
+            renderer.shaderManager.setShader(shader);
             gl.uniformMatrix3fv(shader.uniforms.translationMatrix._location, false, graphics.worldTransform.toArray(true));
             gl.uniformMatrix3fv(shader.uniforms.projectionMatrix._location, false, renderer.currentRenderTarget.projectionMatrix.toArray(true));
             gl.uniform3fv(shader.uniforms.tint._location, utils.hex2rgb(graphics.tint));
@@ -223,22 +112,13 @@ PIXI.GraphicsRenderer.prototype.render = function(graphics) {
             gl.bindBuffer(gl.ARRAY_BUFFER, webGLData.buffer);
             gl.vertexAttribPointer(shader.attributes.aVertexPosition, 2, gl.FLOAT, false, 4 * 6, 0);
             gl.vertexAttribPointer(shader.attributes.aColor, 4, gl.FLOAT, false, 4 * 6, 2 * 4);
-            //gl.vertexAttribPointer(shader.attributes.aTextureCoord, 2, gl.FLOAT, false, 4 * 8, 6*4);
-
-            // if (Math.random() > 0.99){
-            //     console.log(texTest.texture.baseTexture._glTextures[gl.id]);
-            // }
-
             if (webGLData.drawNativeLine) {
                 gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
                 gl.drawArrays(gl.TRIANGLE_STRIP, 0, webGLData.points.length / 6);
             } else {
-                // set the index buffer!
                 gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, webGLData.indexBuffer);
                 gl.drawElements(gl.TRIANGLE_STRIP, webGLData.indices.length, gl.UNSIGNED_SHORT, 0);
             }
-            //gl.bindTexture(gl.TEXTURE_2D, null);
-
         }
     }
 };
@@ -246,7 +126,7 @@ PIXI.GraphicsRenderer.prototype.render = function(graphics) {
 
 
 //------------------------------------------------------------------------------------------------------
-// animation utils (can this be in the main anim loop)?
+// animation utils
 function fadeIn(elem, ms) {
     if (!elem)
         return;
@@ -301,12 +181,12 @@ function fadeOut(elem, ms) {
 
 
 //------------------------------------------------------------------------------------------------------
-// data loading: 
+// data loading
 var loadedJson = false;
 var dataobj;
 
 function readTextFile(file, callback) {
-
+    console.log("loading text file...");
     var rawFile = new XMLHttpRequest();
     rawFile.overrideMimeType("application/json");
     rawFile.open("GET", file, true);
@@ -318,12 +198,15 @@ function readTextFile(file, callback) {
     rawFile.send(null);
 }
 
-//usage:
-readTextFile("https://storage.googleapis.com/navigator-media-usa/media/connected_line/v2/site/www/drag/dataobj.json", function(code, data) {
-
+// Usage:
+// readTextFile("https://storage.googleapis.com/navigator-media-usa/media/connected_line/v2/site/www/drag/dataobj.json", function(code, data)
+readTextFile("landdata/dataobj.json", function(code, data) { //www/drag/landdata/dataobj-all.json
+    console.log("loading data...");
     dataobj = JSON.parse(data);
 
-    // calc and sort the angle length
+    console.log(dataobj);
+
+    // calculate and sort the angle length
     for (var i = 0; i < dataobj.length; i++) {
         var startAngle = 0;
         for (var j = 0; j < dataobj[i].angleDiffs.length; j++) {
@@ -343,7 +226,6 @@ readTextFile("https://storage.googleapis.com/navigator-media-usa/media/connected
 
 // Update DOM elements with new data
 function updateMetadata(data) {
-
     var line1 = data['line-1'] || '';
     var line2 = data['line-2'] || '';
     var attribution = data['attribution'] || '';
@@ -545,10 +427,34 @@ imageWithPts = function() {
 
 }
 
+// harry: optimize image loading function
 imageWithPts.prototype.loadImage = function(url) {
-    this.sprite1 = PIXI.Sprite.fromImage(url, true);
-    //this.ElapsedMilliseconds = new Date().getTime() - this.StartMilliseconds;
-}
+    return new Promise((resolve, reject) => {
+        const texture = PIXI.Texture.from(url);
+        this.sprite1 = new PIXI.Sprite(texture);
+
+        texture.baseTexture.on('loaded', () => {
+            this.sprite1.alpha = 0.0;
+            this.sprite1.anchor.set(0);
+            this.sprite1.position.set(-100, -100);
+            this.sprite1.scale.set(0.05);
+            this.bLoaded = true;
+            container.addChild(this.sprite1);
+            resolve(this.sprite1); // Resolve the promise with the sprite
+        });
+
+        texture.baseTexture.on('error', (error) => {
+            console.error("Failed to load image:", url, error);
+            reject(error); // Reject the promise if there's an error
+        });
+    });
+};
+
+
+// imageWithPts.prototype.loadImage = function(url) {
+//     this.sprite1 = PIXI.Sprite.fromImage(url, true);
+//     //this.ElapsedMilliseconds = new Date().getTime() - this.StartMilliseconds;
+// }
 
 imageWithPts.prototype.ready = function(url) {
     //console.log("ready");
@@ -787,18 +693,150 @@ function loadBgImage(fileToLoad) {
 }
 
 
+async function loadImageAndHandle(imageWithPts, url) {
+    try {
+        const texture = PIXI.Texture.fromImage(url);
+        imageWithPts.sprite1 = new PIXI.Sprite(texture);
+
+        texture.baseTexture.on('loaded', () => {
+            imageWithPts.sprite1.alpha = 0.0;
+            imageWithPts.sprite1.anchor.set(0);
+            imageWithPts.sprite1.position.set(-100, -100);
+            imageWithPts.sprite1.scale.set(0.05);
+            imageWithPts.bLoaded = true;
+            container.addChild(imageWithPts.sprite1);
+            console.log('Image loaded successfully', imageWithPts.sprite1);
+        });
+
+        texture.baseTexture.on('error', (error) => {
+            console.error("Failed to load image:", url, error);
+        });
+    } catch (error) {
+        console.error('Error loading image', url, error);
+    }
+}
+
+
 
 // 
 //------------------------------------------------------------------------------------------------
+// function loadRandomIntoCache(useBins) {
+
+
+//     var limitToBin = false;
+//     var selectedBin = -1;
+
+//     if (useBins === true) {
+//         // calculate BINS 
+
+//         var bins = [];
+//         for (var i = 0; i < nBins; i++) {
+//             bins[i] = 0;
+//         }
+
+//         for (var i = 0; i < iwpCache.length; i++) {
+//             bins[iwpCache[i].bin]++;
+//         }
+
+//         var i,
+//             l,
+//             minVal,
+//             minIndex;
+//         minVal = Number.MAX_VALUE;
+//         for (i = 0, l = bins.length; i < l; i++) {
+//             if (minVal > bins[i]) {
+//                 minVal = bins[i];
+//                 minIndex = i;
+//             }
+//         }
+
+//         limitToBin = true;
+//         selectedBin = minIndex;
+//     }
+
+
+//     var goodToChooseFrom = [];
+//     for (var i = 0; i < dataobj.length; i++) {
+//         //console.log("data length: " +i);
+//         var isok = true;
+
+//         // if we are in the cache, don't load again! 
+//         for (var j = 0; j < iwpCache.length; j++) {
+//             if (iwpCache[j].index == i) {
+//                 isok = false;
+//             }
+//         }
+
+//         // if we are on the screen, don't load again! 
+//         for (var j = 0; j < iwp.length; j++) {
+//             if (iwp[j].index == i) {
+//                 isok = false;
+//             }
+//         }
+
+//         if (limitToBin === true) {
+//             var bin = Math.floor(i / ((dataobj.length / nBins)));
+//             if (bin != selectedBin) {
+//                 isok = false;
+//             }
+//         }
+
+//         if (isok) {
+
+
+
+//             goodToChooseFrom.push(i);
+//         }
+//     }
+
+//     var goodOne = goodToChooseFrom[Math.floor(Math.random() * goodToChooseFrom.length)];
+
+//     var imageWithPtsTemp = new imageWithPts();
+
+//     imageWithPtsTemp.index = goodOne;
+//     imageWithPtsTemp.bin = Math.floor(goodOne / ((dataobj.length / nBins)));
+//     imageWithPtsTemp.startIndex = -1;
+//     imageWithPtsTemp.endIndex = -1;
+//     //console.log('imgsQuarterRes/' + dataobj[goodOne]['fileName']);
+//     //imageWithPtsTemp.texture = PIXI.Texture.fromImage('imgsQuarterRes/' + dataobj[goodOne]['fileName']);
+//     //imageWithPtsTemp.sprite1 = PIXI.Sprite.fromImage('https://storage.googleapis.com/navigator-media-usa/media/connected_line/v1/imgsQuarterRes/' + dataobj[goodOne]['fileName'], true);
+
+//     //http://storage.googleapis.com/navigator-media-usa/media/connected_line/v2/imgsQuarterRes75/1147.jpg
+
+
+//     if (isMobile) {
+//         //imageWithPtsTemp('landdata/' + dataobj[goodOne]['fileName']);
+//         //loadImageAndHandle(imageWithPtsTemp, 'https://storage.googleapis.com/navigator-media-usa/media/connected_line/v2/imgsQuarterRes75/' + dataobj[goodOne]['fileName']);
+//         loadImageAndHandle(imageWithPtsTemp, 'landdata/' + dataobj[goodOne]['fileName']);
+
+//         iwpCache.push(imageWithPtsTemp);
+//         //resolutionScaleFactor = 0.75;
+//     } else {
+//         //imageWithPtsTemp('landdata/' + dataobj[goodOne]['fileName']);
+//         //loadImageAndHandle(imageWithPtsTemp, 'https://storage.googleapis.com/navigator-media-usa/media/connected_line/v2/imgsQuarterRes75/' + dataobj[goodOne]['fileName']);
+//         loadImageAndHandle(imageWithPtsTemp, 'landdata/' + dataobj[goodOne]['fileName']);
+//         iwpCache.push(imageWithPtsTemp);
+        
+//         //resolutionScaleFactor = 1.0;
+//     }
+
+//     ///100069.jpg
+
+//     //imageWithPtsTemp.sprite1 = new PIXI.Sprite(imageWithPtsTemp.texture );
+
+//     // calc these things later
+//     //imageWithPtsTemp.origLength = len;
+//     //imageWithPtsTemp.origAngle = Math.atan2(diffy, diffx);
+
+//     //iwpCache.sort(sortByAngle(dataobj)); 
+
+// }
+
 function loadRandomIntoCache(useBins) {
-
-
     var limitToBin = false;
     var selectedBin = -1;
 
     if (useBins === true) {
-        // calculate BINS 
-
         var bins = [];
         for (var i = 0; i < nBins; i++) {
             bins[i] = 0;
@@ -808,12 +846,9 @@ function loadRandomIntoCache(useBins) {
             bins[iwpCache[i].bin]++;
         }
 
-        var i,
-            l,
-            minVal,
-            minIndex;
-        minVal = Number.MAX_VALUE;
-        for (i = 0, l = bins.length; i < l; i++) {
+        var minVal = Number.MAX_VALUE;
+        var minIndex;
+        for (var i = 0; i < bins.length; i++) {
             if (minVal > bins[i]) {
                 minVal = bins[i];
                 minIndex = i;
@@ -824,76 +859,60 @@ function loadRandomIntoCache(useBins) {
         selectedBin = minIndex;
     }
 
-
     var goodToChooseFrom = [];
     for (var i = 0; i < dataobj.length; i++) {
         var isok = true;
-
-        // if we are in the cache, don't load again! 
         for (var j = 0; j < iwpCache.length; j++) {
             if (iwpCache[j].index == i) {
                 isok = false;
+                break;
             }
         }
 
-        // if we are on the screen, don't load again! 
         for (var j = 0; j < iwp.length; j++) {
             if (iwp[j].index == i) {
                 isok = false;
+                break;
             }
         }
 
         if (limitToBin === true) {
-            var bin = Math.floor(i / ((dataobj.length / nBins)));
+            var bin = Math.floor(i / (dataobj.length / nBins));
             if (bin != selectedBin) {
                 isok = false;
             }
         }
 
         if (isok) {
-
-
-
             goodToChooseFrom.push(i);
         }
     }
 
-    var goodOne = goodToChooseFrom[Math.floor(Math.random() * goodToChooseFrom.length)];
-
-    var imageWithPtsTemp = new imageWithPts();
-
-    imageWithPtsTemp.index = goodOne;
-    imageWithPtsTemp.bin = Math.floor(goodOne / ((dataobj.length / nBins)));
-    imageWithPtsTemp.startIndex = -1;
-    imageWithPtsTemp.endIndex = -1;
-    //console.log('imgsQuarterRes/' + dataobj[goodOne]['fileName']);
-    //imageWithPtsTemp.texture = PIXI.Texture.fromImage('imgsQuarterRes/' + dataobj[goodOne]['fileName']);
-    //imageWithPtsTemp.sprite1 = PIXI.Sprite.fromImage('https://storage.googleapis.com/navigator-media-usa/media/connected_line/v1/imgsQuarterRes/' + dataobj[goodOne]['fileName'], true);
-
-    //http://storage.googleapis.com/navigator-media-usa/media/connected_line/v2/imgsQuarterRes75/1147.jpg
-
-
-    if (isMobile) {
-        imageWithPtsTemp.loadImage('https://storage.googleapis.com/navigator-media-usa/media/connected_line/v2/imgsQuarterRes75/' + dataobj[goodOne]['fileName']);
-        iwpCache.push(imageWithPtsTemp);
-        //resolutionScaleFactor = 0.75;
-    } else {
-        imageWithPtsTemp.loadImage('https://storage.googleapis.com/navigator-media-usa/media/connected_line/v2/imgsQuarterRes/' + dataobj[goodOne]['fileName']);
-        iwpCache.push(imageWithPtsTemp);
-        //resolutionScaleFactor = 1.0;
+    if (goodToChooseFrom.length === 0) {
+        console.error("No valid indices to choose from.");
+        return;
     }
 
-    ///100069.jpg
+    var goodOne = goodToChooseFrom[Math.floor(Math.random() * goodToChooseFrom.length)];
 
-    //imageWithPtsTemp.sprite1 = new PIXI.Sprite(imageWithPtsTemp.texture );
+    if (!dataobj[goodOne]) {
+        console.error("Selected index does not exist in dataobj:", goodOne);
+        return;
+    }
 
-    // calc these things later
-    //imageWithPtsTemp.origLength = len;
-    //imageWithPtsTemp.origAngle = Math.atan2(diffy, diffx);
+    console.log("Loading image from index:", goodOne, "with data:", dataobj[goodOne]);
 
-    //iwpCache.sort(sortByAngle(dataobj)); 
+    var imageWithPtsTemp = new imageWithPts();
+    imageWithPtsTemp.index = goodOne;
+    imageWithPtsTemp.bin = Math.floor(goodOne / (dataobj.length / nBins));
+    loadImageAndHandle(imageWithPtsTemp, 'landdata/' + dataobj[goodOne].fileName);
+    //loadImageAndHandle(imageWithPtsTemp, 'https://storage.googleapis.com/navigator-media-usa/media/connected_line/v2/imgsQuarterRes75/' + dataobj[goodOne].fileName);
+    
+    ////loadImageAndHandle(imageWithPtsTemp, 'https://storage.googleapis.com/navigator-media-usa/media/connected_line/v2/imgsQuarterRes75/' + dataobj[goodOne]['fileName']);
 
-}
+    iwpCache.push(imageWithPtsTemp);
+} 
+
 
 
 
@@ -1099,6 +1118,7 @@ function addLineFromCache(lineToAddFromCache) {
     }
 
 
+    // harry: disable this for experiment
     loadRandomIntoCache(true);
 
     iwpCache.splice(loadedCache[lineToAddFromCache].cacheIndex, 1); // we need to know where we are in the cache array (diff then loaded aray)
@@ -1138,7 +1158,7 @@ function animate() {
 
         // console.log(myGui.speed);
     } else {
-        //console.log("good");
+        //console.log("good to animate");
     }
     // check which iwpCaches have loaded: 
 
@@ -1149,7 +1169,8 @@ function animate() {
     // }
 
 
-    //------------------------------------------------------ load into cache: 
+    //----------------------------------------------------- load into cache: 
+    // harry: disable to debugging
     if (frameNum > 0) {
         if (iwpCache.length < 50 && frameNum % 10 == 0) {
             loadRandomIntoCache(false);
@@ -1168,7 +1189,7 @@ function animate() {
 
 
 
-    //console.log("iwpCache " + iwpCache.length + " loaded " + loadedCache.length);
+    console.log("iwpCache " + iwpCache.length + " loaded " + loadedCache.length);
 
     for (var i = 0; i < loadedCache.length; i++) {
         loadedCache[i].sprite1.alpha = 0.0;
@@ -1182,7 +1203,7 @@ function animate() {
     }
 
 
-    if (loadedCache.length > 20) {
+    if (loadedCache.length > 1) {
         if (loadingVisible === true) {
             loadingVisible = false;
 
@@ -1221,7 +1242,7 @@ function animate() {
 
             if (document.getElementById("progress") != null) {
                 //console.log("change");
-                document.getElementById("progress").innerHTML = "Loading</br>" + Math.round((loadingCount / 20.0) * 100) + " / 100";
+                document.getElementById("progress").innerHTML = "Loading</br>" + Math.round((loadingCount / 1.0) * 100) + " / 100";
             }
 
 
@@ -1457,10 +1478,6 @@ function animate() {
 
 
                 var scale = myGui.scale * (1 - velStopEnergy) * (1.0 / drawScaleAmt) + myGui.maxZoom * velStopEnergy * (1.0 / drawScaleAmt);
-
-
-
-                //var scale = myGui.scale * (1-velStopEnergy) + 3.0 * velStopEnergy;
 
                 var p = new Point(ptsSmooth[i].x - smoothPt.x, ptsSmooth[i].y - smoothPt.y).clone().rotate((0) * (180.0 / Math.PI)).multiplyNum(scale).addX(renderer.view.width * 0.5).addY(renderer.view.height * 0.5);
 
