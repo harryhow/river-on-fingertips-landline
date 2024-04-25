@@ -1769,9 +1769,9 @@ function animate() {
 
 // See which images are popular for people checking out on Google Maps
 document.getElementById('info-link').onclick = function(e) {
-    ga('send', 'event', {
-        eventCategory: 'Outbound Link',
-        eventAction: 'click',
-        eventLabel: e.target.href
-    });
+    // ga('send', 'event', {
+    //     eventCategory: 'Outbound Link',
+    //     eventAction: 'click',
+    //     eventLabel: e.target.href
+    // });
 }
