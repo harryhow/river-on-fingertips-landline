@@ -235,7 +235,7 @@ function updateMetadata(data) {
     document.getElementById('info-link').href = url;
     document.getElementById('info-attribution').innerText = attribution;
 
-    ga('send', 'event', 'Swipe', 'Swipe', data['line-1'] + ' ' + data['line-2']);
+    //ga('send', 'event', 'Swipe', 'Swipe', data['line-1'] + ' ' + data['line-2']);
 }
 
 // Load metadata
@@ -832,7 +832,90 @@ async function loadImageAndHandle(imageWithPts, url) {
 
 // }
 
+// function loadRandomIntoCache(useBins) {
+//     var limitToBin = false;
+//     var selectedBin = -1;
+
+//     if (useBins === true) {
+//         var bins = [];
+//         for (var i = 0; i < nBins; i++) {
+//             bins[i] = 0;
+//         }
+
+//         for (var i = 0; i < iwpCache.length; i++) {
+//             bins[iwpCache[i].bin]++;
+//         }
+
+//         var minVal = Number.MAX_VALUE;
+//         var minIndex;
+//         for (var i = 0; i < bins.length; i++) {
+//             if (minVal > bins[i]) {
+//                 minVal = bins[i];
+//                 minIndex = i;
+//             }
+//         }
+
+//         limitToBin = true;
+//         selectedBin = minIndex;
+//     }
+
+//     var goodToChooseFrom = [];
+//     for (var i = 0; i < dataobj.length; i++) {
+//         var isok = true;
+//         for (var j = 0; j < iwpCache.length; j++) {
+//             if (iwpCache[j].index == i) {
+//                 isok = false;
+//                 break;
+//             }
+//         }
+
+//         for (var j = 0; j < iwp.length; j++) {
+//             if (iwp[j].index == i) {
+//                 isok = false;
+//                 break;
+//             }
+//         }
+
+//         if (limitToBin === true) {
+//             var bin = Math.floor(i / (dataobj.length / nBins));
+//             if (bin != selectedBin) {
+//                 isok = false;
+//             }
+//         }
+
+//         if (isok) {
+//             goodToChooseFrom.push(i);
+//         }
+//     }
+
+//     if (goodToChooseFrom.length === 0) {
+//         console.error("No valid indices to choose from.");
+//         return;
+//     }
+
+//     var goodOne = goodToChooseFrom[Math.floor(Math.random() * goodToChooseFrom.length)];
+
+//     if (!dataobj[goodOne]) {
+//         console.error("Selected index does not exist in dataobj:", goodOne);
+//         return;
+//     }
+
+//     console.log("Loading image from index:", goodOne, "with data:", dataobj[goodOne]);
+
+//     var imageWithPtsTemp = new imageWithPts();
+//     imageWithPtsTemp.index = goodOne;
+//     imageWithPtsTemp.bin = Math.floor(goodOne / (dataobj.length / nBins));
+//     loadImageAndHandle(imageWithPtsTemp, imgDataUrl + dataobj[goodOne].fileName);
+//     //loadImageAndHandle(imageWithPtsTemp, 'https://storage.googleapis.com/navigator-media-usa/media/connected_line/v2/imgsQuarterRes75/' + dataobj[goodOne].fileName);
+    
+//     ////loadImageAndHandle(imageWithPtsTemp, 'https://storage.googleapis.com/navigator-media-usa/media/connected_line/v2/imgsQuarterRes75/' + dataobj[goodOne]['fileName']);
+
+//     iwpCache.push(imageWithPtsTemp);
+// } 
+
+
 function loadRandomIntoCache(useBins) {
+
     var limitToBin = false;
     var selectedBin = -1;
 
@@ -888,32 +971,32 @@ function loadRandomIntoCache(useBins) {
         }
     }
 
-    if (goodToChooseFrom.length === 0) {
-        console.error("No valid indices to choose from.");
-        return;
+    if (goodToChooseFrom.length > 0) {
+        var goodOne = goodToChooseFrom[Math.floor(Math.random() * goodToChooseFrom.length)];
+
+        var imageWithPtsTemp = new imageWithPts();
+        imageWithPtsTemp.index = goodOne;
+        imageWithPtsTemp.bin = Math.floor(goodOne / (dataobj.length / nBins));
+        loadImageAndHandle(imageWithPtsTemp, imgDataUrl + dataobj[goodOne].fileName);
+        iwpCache.push(imageWithPtsTemp);
+    } else {
+        console.warn("No valid indices to choose from. Skipping loading a new image.");
     }
 
-    var goodOne = goodToChooseFrom[Math.floor(Math.random() * goodToChooseFrom.length)];
 
-    if (!dataobj[goodOne]) {
-        console.error("Selected index does not exist in dataobj:", goodOne);
-        return;
-    }
+    // if (goodToChooseFrom.length === 0) {
+    //     console.warn("No valid indices to choose from. Skipping loading a new image.");
+    //     return;
+    // }
 
-    console.log("Loading image from index:", goodOne, "with data:", dataobj[goodOne]);
+    // var goodOne = goodToChooseFrom[Math.floor(Math.random() * goodToChooseFrom.length)];
 
-    var imageWithPtsTemp = new imageWithPts();
-    imageWithPtsTemp.index = goodOne;
-    imageWithPtsTemp.bin = Math.floor(goodOne / (dataobj.length / nBins));
-    loadImageAndHandle(imageWithPtsTemp, 'landdata/' + dataobj[goodOne].fileName);
-    //loadImageAndHandle(imageWithPtsTemp, 'https://storage.googleapis.com/navigator-media-usa/media/connected_line/v2/imgsQuarterRes75/' + dataobj[goodOne].fileName);
-    
-    ////loadImageAndHandle(imageWithPtsTemp, 'https://storage.googleapis.com/navigator-media-usa/media/connected_line/v2/imgsQuarterRes75/' + dataobj[goodOne]['fileName']);
-
-    iwpCache.push(imageWithPtsTemp);
-} 
-
-
+    // var imageWithPtsTemp = new imageWithPts();
+    // imageWithPtsTemp.index = goodOne;
+    // imageWithPtsTemp.bin = Math.floor(goodOne / (dataobj.length / nBins));
+    // loadImageAndHandle(imageWithPtsTemp, imgDataUrl + dataobj[goodOne].fileName);
+    // iwpCache.push(imageWithPtsTemp);
+}
 
 
 //------------------------------------------------------------------------------------------------
@@ -1033,95 +1116,105 @@ function addLineFromCache(lineToAddFromCache) {
     lastFilename = filename;
 
     var id = filename.substr(0, filename.length - 4);
-    if (firstTouch) {
-        matchedMetadata = metadata[id];
+    // if (firstTouch) {
+    //     matchedMetadata = metadata[id];
 
-        updateMetadata(matchedMetadata);
-    } else {
-        //console.log(id + " " + filename );
-        updateMetadata(metadata[id]);
+    //     updateMetadata(matchedMetadata);
+    // } else {
+    //     //console.log(id + " " + filename );
+    //     updateMetadata(metadata[id]);
+    // }
+
+
+
+
+    if (dataobj[lineToAdd]['startPt'] && dataobj[lineToAdd]['endPt']) {
+
+        var diffx = dataobj[lineToAdd]['startPt'].x - dataobj[lineToAdd]['endPt'].x;
+        var diffy = dataobj[lineToAdd]['startPt'].y - dataobj[lineToAdd]['endPt'].y;
+        var len = Math.sqrt(diffx * diffx + diffy * diffy);
+    
+        if (pts.length == 0) {
+            pts[0] = new Point(300, 300);
+        }
+    
+        var startPt = pts.length - 1;
+    
+        var scaleMe = 1.0;
+        if (myGui.variableSizes === true) {
+            scaleMe = 0.75 + (Math.random() * 0.5);
+        }
+    
+        for (var i = 0; i < dataobj[lineToAdd]['angleDiffs'].length; i++) {
+            myAngle += dataobj[lineToAdd]['angleDiffs'][i];
+            var p = pts[pts.length - 1];
+            var newp = new Point(p.x + (300.0 / dataobj[lineToAdd]['angleDiffs'].length) * scaleMe * Math.cos(myAngle), p.y + (300.0 / dataobj[lineToAdd]['angleDiffs'].length) * scaleMe * Math.sin(myAngle));
+            pts.push(newp);
+        }
+    
+        var endPt = pts.length - 1;
+    
+        var imageWithPtsTemp = loadedCache[lineToAddFromCache];
+        imageWithPtsTemp.startIndex = startPt;
+        imageWithPtsTemp.endIndex = endPt;
+    
+        /*
+        imageWithPtsTemp.texture = PIXI.Texture.fromImage('imgsQuarterRes/' + dataobj[lineToAdd]['fileName']);
+        imageWithPtsTemp.sprite1 = new PIXI.Sprite(imageWithPtsTemp.texture );
+        */
+        imageWithPtsTemp.sprite1.alpha = 0.0;
+    
+        imageWithPtsTemp.sprite1.anchor.x = dataobj[lineToAdd]['startPt'].x / 2048.0;
+        imageWithPtsTemp.sprite1.anchor.y = dataobj[lineToAdd]['startPt'].y / 2020.0;
+        //console.log(imageWithPtsTemp.sprite1.anchor.x + " " + imageWithPtsTemp.sprite1.anchor.y);
+    
+    
+        imageWithPtsTemp.origLength = len;
+        imageWithPtsTemp.origAngle = Math.atan2(diffy, diffx);
+    
+    
+        diffx = dataobj[lineToAdd]['startPt'].x - 2048 / 2;
+        diffy = dataobj[lineToAdd]['startPt'].y - 2020 / 2;
+    
+        imageWithPtsTemp.midAngle = Math.atan2(diffy, diffx);
+        imageWithPtsTemp.midDistance = Math.sqrt(diffx * diffx + diffy * diffy);
+    
+        imageWithPtsTemp.lineScale = len / 2876.0;
+    
+        //console.log("sprite " + lineToAddFromCache + " width "  + imageWithPtsTemp.sprite1.width);
+    
+    
+        //container.addChild(imageWithPtsTemp.sprite1);
+        //stage.removeChild(drawing);
+        //stage.addChild(drawing);
+        //stage.addChild(imageWithPtsTemp.texture);   
+    
+        // IWP     
+        iwp.push(imageWithPtsTemp);
+        while (iwp.length > 15) {
+            container.removeChild(iwp[0].sprite1);
+            iwp[0].sprite1.texture.destroy(true);
+            iwp[0].sprite1.destroy();
+            iwp.splice(0, 1);
+        }
+    
+        // now, let's remove and add childs again. 
+    
+        for (var i = 0; i < iwp.length; i++) {
+            container.removeChild(iwp[i].sprite1);
+            container.addChild(iwp[i].sprite1);
+        }
+    
+    
+        // harry: disable this for experiment
+        loadRandomIntoCache(true);
+        
+        iwpCache.splice(loadedCache[lineToAddFromCache].cacheIndex, 1); // we need to know where we are in the cache array (diff then loaded aray)
+    
     }
-
-    var diffx = dataobj[lineToAdd]['startPt'].x - dataobj[lineToAdd]['endPt'].x;
-    var diffy = dataobj[lineToAdd]['startPt'].y - dataobj[lineToAdd]['endPt'].y;
-    var len = Math.sqrt(diffx * diffx + diffy * diffy);
-
-    if (pts.length == 0) {
-        pts[0] = new Point(300, 300);
+    else {
+        console.warn("Invalid startPt or endPt for line", lineToAdd);
     }
-
-    var startPt = pts.length - 1;
-
-    var scaleMe = 1.0;
-    if (myGui.variableSizes === true) {
-        scaleMe = 0.75 + (Math.random() * 0.5);
-    }
-
-    for (var i = 0; i < dataobj[lineToAdd]['angleDiffs'].length; i++) {
-        myAngle += dataobj[lineToAdd]['angleDiffs'][i];
-        var p = pts[pts.length - 1];
-        var newp = new Point(p.x + (300.0 / dataobj[lineToAdd]['angleDiffs'].length) * scaleMe * Math.cos(myAngle), p.y + (300.0 / dataobj[lineToAdd]['angleDiffs'].length) * scaleMe * Math.sin(myAngle));
-        pts.push(newp);
-    }
-
-    var endPt = pts.length - 1;
-
-    var imageWithPtsTemp = loadedCache[lineToAddFromCache];
-    imageWithPtsTemp.startIndex = startPt;
-    imageWithPtsTemp.endIndex = endPt;
-
-    /*
-    imageWithPtsTemp.texture = PIXI.Texture.fromImage('imgsQuarterRes/' + dataobj[lineToAdd]['fileName']);
-    imageWithPtsTemp.sprite1 = new PIXI.Sprite(imageWithPtsTemp.texture );
-    */
-    imageWithPtsTemp.sprite1.alpha = 0.0;
-
-    imageWithPtsTemp.sprite1.anchor.x = dataobj[lineToAdd]['startPt'].x / 2048.0;
-    imageWithPtsTemp.sprite1.anchor.y = dataobj[lineToAdd]['startPt'].y / 2020.0;
-    //console.log(imageWithPtsTemp.sprite1.anchor.x + " " + imageWithPtsTemp.sprite1.anchor.y);
-
-
-    imageWithPtsTemp.origLength = len;
-    imageWithPtsTemp.origAngle = Math.atan2(diffy, diffx);
-
-
-    diffx = dataobj[lineToAdd]['startPt'].x - 2048 / 2;
-    diffy = dataobj[lineToAdd]['startPt'].y - 2020 / 2;
-
-    imageWithPtsTemp.midAngle = Math.atan2(diffy, diffx);
-    imageWithPtsTemp.midDistance = Math.sqrt(diffx * diffx + diffy * diffy);
-
-    imageWithPtsTemp.lineScale = len / 2876.0;
-
-    //console.log("sprite " + lineToAddFromCache + " width "  + imageWithPtsTemp.sprite1.width);
-
-
-    //container.addChild(imageWithPtsTemp.sprite1);
-    //stage.removeChild(drawing);
-    //stage.addChild(drawing);
-    //stage.addChild(imageWithPtsTemp.texture);   
-
-    // IWP     
-    iwp.push(imageWithPtsTemp);
-    while (iwp.length > 15) {
-        container.removeChild(iwp[0].sprite1);
-        iwp[0].sprite1.texture.destroy(true);
-        iwp[0].sprite1.destroy();
-        iwp.splice(0, 1);
-    }
-
-    // now, let's remove and add childs again. 
-
-    for (var i = 0; i < iwp.length; i++) {
-        container.removeChild(iwp[i].sprite1);
-        container.addChild(iwp[i].sprite1);
-    }
-
-
-    // harry: disable this for experiment
-    loadRandomIntoCache(true);
-
-    iwpCache.splice(loadedCache[lineToAddFromCache].cacheIndex, 1); // we need to know where we are in the cache array (diff then loaded aray)
 
 }
 
@@ -1168,11 +1261,10 @@ function animate() {
 
     // }
 
-
     //----------------------------------------------------- load into cache: 
     // harry: disable to debugging
     if (frameNum > 0) {
-        if (iwpCache.length < 50 && frameNum % 10 == 0) {
+        if (iwpCache.length < 50 && frameNum % 2 == 0) {
             loadRandomIntoCache(false);
         }
     }
