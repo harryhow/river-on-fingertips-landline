@@ -198,31 +198,32 @@ function readTextFile(file, callback) {
     rawFile.send(null);
 }
 
-// Usage:
-// readTextFile("https://storage.googleapis.com/navigator-media-usa/media/connected_line/v2/site/www/drag/dataobj.json", function(code, data)
-readTextFile("landdata/dataobj.json", function(code, data) { //www/drag/landdata/dataobj-all.json
-    console.log("loading data...");
-    dataobj = JSON.parse(data);
+// // Usage:
+// // readTextFile("https://storage.googleapis.com/navigator-media-usa/media/connected_line/v2/site/www/drag/dataobj.json", function(code, data)
+// readTextFile(dataobjPath, function(code, data) 
+// { //www/drag/landdata/dataobj-all.json
+//     console.log("loading data...");
+//     dataobj = JSON.parse(data);
 
-    console.log(dataobj);
+//     console.log(dataobj);
 
-    // calculate and sort the angle length
-    for (var i = 0; i < dataobj.length; i++) {
-        var startAngle = 0;
-        for (var j = 0; j < dataobj[i].angleDiffs.length; j++) {
-            startAngle += dataobj[i].angleDiffs[j];
-        }
-        dataobj[i].angleChange = startAngle;
-    }
+//     // calculate and sort the angle length
+//     for (var i = 0; i < dataobj.length; i++) {
+//         var startAngle = 0;
+//         for (var j = 0; j < dataobj[i].angleDiffs.length; j++) {
+//             startAngle += dataobj[i].angleDiffs[j];
+//         }
+//         dataobj[i].angleChange = startAngle;
+//     }
 
-    dataobj.sort(function(a, b) {
-        return (a.angleChange > b.angleChange) ? 1 : ((b.angleChange > a.angleChange) ? -1 : 0);
-    });
+//     dataobj.sort(function(a, b) {
+//         return (a.angleChange > b.angleChange) ? 1 : ((b.angleChange > a.angleChange) ? -1 : 0);
+//     });
 
-    console.log("done loading text");
+//     console.log("done loading text");
 
-    loadedJson = true;
-});
+//     loadedJson = true;
+// });
 
 // Update DOM elements with new data
 function updateMetadata(data) {
@@ -240,9 +241,6 @@ function updateMetadata(data) {
 
 // Load metadata
 var metadata = {};
-readTextFile('https://storage.googleapis.com/navigator-media-usa/media/connected_line/v2/site/www/drag/metadata-converted.json', function(code, data) {
-    metadata = JSON.parse(data);
-});
 
 //------------------------------------------------------------------------------------------------------
 // gui
@@ -280,6 +278,7 @@ var myGui = new Gui();
 
 var imgDataSwitch = window.location.hash; // get url hash path to switch between image data folder
 var isDevMode = (window.location.hash.indexOf('dev') == -1) ? false : true;
+
 
 var guiSettings = {
     "preset": "Default",
@@ -339,20 +338,53 @@ var guiSettings = {
 };
 
 
+var imgDataPath;
+var dataobjPath;
 
 window.onload = function() {
 
     console.log("drag-app.js: " + imgDataSwitch);
 
     if (imgDataSwitch === '#drag-a') {
-        imgDataUrl = 'landdata/a_takoham/';
+        imgDataPath = 'landdata/a_takoham/';
+        dataobjPath = 'landdata/dataobj-a.json';
     }
     else if (imgDataSwitch === '#drag-b') {
-        imgDataUrl = 'landdata/b_xindian/';
+        imgDataPath = 'landdata/b_xindian/';
+        dataobjPath = 'landdata/dataobj-b.json';
     }
     else if (imgDataSwitch === '#drag-c') {
-        imgDataUrl = 'landdata/c_keelung/';
+        imgDataPath = 'landdata/c_keelung/';
+        dataobjPath = 'landdata/dataobj-c.json';
     }
+
+    // Move the readTextFile function call inside the window.onload event handler
+    // Usage:
+    // readTextFile("https://storage.googleapis.com/navigator-media-usa/media/connected_line/v2/site/www/drag/dataobj.json", function(code, data)
+    readTextFile(dataobjPath, function(code, data) 
+    { //www/drag/landdata/dataobj-all.json
+        console.log("loading data...");
+        dataobj = JSON.parse(data);
+
+        console.log(dataobj);
+
+        // calculate and sort the angle length
+        for (var i = 0; i < dataobj.length; i++) {
+            var startAngle = 0;
+            for (var j = 0; j < dataobj[i].angleDiffs.length; j++) {
+                startAngle += dataobj[i].angleDiffs[j];
+            }
+            dataobj[i].angleChange = startAngle;
+        }
+
+        dataobj.sort(function(a, b) {
+            return (a.angleChange > b.angleChange) ? 1 : ((b.angleChange > a.angleChange) ? -1 : 0);
+        });
+
+        console.log("done loading text");
+
+        loadedJson = true;
+    });
 
     if (isDevMode) {
         var gui = new dat.GUI({
@@ -977,7 +1009,7 @@ function loadRandomIntoCache(useBins) {
         var imageWithPtsTemp = new imageWithPts();
         imageWithPtsTemp.index = goodOne;
         imageWithPtsTemp.bin = Math.floor(goodOne / (dataobj.length / nBins));
-        loadImageAndHandle(imageWithPtsTemp, imgDataUrl + dataobj[goodOne].fileName);
+        loadImageAndHandle(imageWithPtsTemp, imgDataPath + dataobj[goodOne].fileName);
         iwpCache.push(imageWithPtsTemp);
     } else {
         console.warn("No valid indices to choose from. Loading a previously loaded image.");
