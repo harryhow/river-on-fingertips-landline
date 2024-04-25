@@ -980,7 +980,26 @@ function loadRandomIntoCache(useBins) {
         loadImageAndHandle(imageWithPtsTemp, imgDataUrl + dataobj[goodOne].fileName);
         iwpCache.push(imageWithPtsTemp);
     } else {
-        console.warn("No valid indices to choose from. Skipping loading a new image.");
+        console.warn("No valid indices to choose from. Loading a previously loaded image.");
+
+        // if (iwpCache.length > 0) {
+        //     // Load a random image from the existing cache
+        //     console.log("Loading a random image from the cache.");
+        //     var randomIndex = Math.floor(Math.random() * iwpCache.length);
+        //     var imageWithPtsTemp = iwpCache[randomIndex];
+
+        //     // Create a new instance of imageWithPts with the same properties
+        //     var newImageWithPtsTemp = new imageWithPts();
+        //     newImageWithPtsTemp.index = imageWithPtsTemp.index;
+        //     newImageWithPtsTemp.bin = imageWithPtsTemp.bin;
+        //     newImageWithPtsTemp.sprite1 = imageWithPtsTemp.sprite1;
+        //     newImageWithPtsTemp.bLoaded = true;
+
+        //     // Add the new instance to the cache
+        //     iwpCache.push(newImageWithPtsTemp);
+        // } else {
+        //     console.warn("No images available in the cache.");
+        // }
     }
 
 
@@ -1148,8 +1167,12 @@ function addLineFromCache(lineToAddFromCache) {
         for (var i = 0; i < dataobj[lineToAdd]['angleDiffs'].length; i++) {
             myAngle += dataobj[lineToAdd]['angleDiffs'][i];
             var p = pts[pts.length - 1];
-            var newp = new Point(p.x + (300.0 / dataobj[lineToAdd]['angleDiffs'].length) * scaleMe * Math.cos(myAngle), p.y + (300.0 / dataobj[lineToAdd]['angleDiffs'].length) * scaleMe * Math.sin(myAngle));
-            pts.push(newp);
+            if (p) {
+                var newp = new Point(p.x + (300.0 / dataobj[lineToAdd]['angleDiffs'].length) * scaleMe * Math.cos(myAngle), p.y + (300.0 / dataobj[lineToAdd]['angleDiffs'].length) * scaleMe * Math.sin(myAngle));
+                pts.push(newp);
+            } else {
+                console.warn("Null point encountered. Skipping point addition.");
+            }
         }
     
         var endPt = pts.length - 1;
@@ -1279,9 +1302,7 @@ function animate() {
 
     makeLoadedCache();
 
-
-
-    console.log("iwpCache " + iwpCache.length + " loaded " + loadedCache.length);
+    //console.log("iwpCache " + iwpCache.length + " loaded " + loadedCache.length);
 
     for (var i = 0; i < loadedCache.length; i++) {
         loadedCache[i].sprite1.alpha = 0.0;
@@ -1567,21 +1588,23 @@ function animate() {
             var start = Math.max(ptsSmooth.length - 1000, 0);
             for (var i = start; i < ptsSmooth.length; i++) {
 
-
-
                 var scale = myGui.scale * (1 - velStopEnergy) * (1.0 / drawScaleAmt) + myGui.maxZoom * velStopEnergy * (1.0 / drawScaleAmt);
 
-                var p = new Point(ptsSmooth[i].x - smoothPt.x, ptsSmooth[i].y - smoothPt.y).clone().rotate((0) * (180.0 / Math.PI)).multiplyNum(scale).addX(renderer.view.width * 0.5).addY(renderer.view.height * 0.5);
+                if (ptsSmooth.length > 0 && ptsSmooth[i]) {
 
-                if (i == ptsSmooth.length - 1) {
-                    lastPointX = p.x;
-                    lastPointY = p.y;
-                }
+                    var p = new Point(ptsSmooth[i].x - smoothPt.x, ptsSmooth[i].y - smoothPt.y).clone().rotate((0) * (180.0 / Math.PI)).multiplyNum(scale).addX(renderer.view.width * 0.5).addY(renderer.view.height * 0.5);
 
-                if (i == start) {
-                    drawing.moveTo(p.x, p.y); //ptsSmooth[i].x - smoothPt.x + 400, ptsSmooth[i].y - smoothPt.y + 400);
-                } else {
-                    drawing.lineTo(p.x, p.y); //ptsSmooth[i].x - smoothPt.x + 400, ptsSmooth[i].y - smoothPt.y + 400);
+                    if (i == ptsSmooth.length - 1) {
+                        lastPointX = p.x;
+                        lastPointY = p.y;
+                    }
+    
+                    if (i == start) {
+                        drawing.moveTo(p.x, p.y); //ptsSmooth[i].x - smoothPt.x + 400, ptsSmooth[i].y - smoothPt.y + 400);
+                    } else {
+                        drawing.lineTo(p.x, p.y); //ptsSmooth[i].x - smoothPt.x + 400, ptsSmooth[i].y - smoothPt.y + 400);
+                    }
+
                 }
             }
         }
@@ -1633,85 +1656,83 @@ function animate() {
 
             var scale = myGui.scale * (1 - velStopEnergy) * (1.0 / drawScaleAmt) + myGui.maxZoom * velStopEnergy * (1.0 / drawScaleAmt);
 
-            var startPt = new Point(pts[iwp[i].startIndex].x - smoothPt.x, pts[iwp[i].startIndex].y - smoothPt.y).clone().rotate((0) * (180.0 / Math.PI)).multiplyNum(scale).addX(renderer.view.width * 0.5).addY(renderer.view.height * 0.5);
-            var endPt = new Point(pts[iwp[i].endIndex].x - smoothPt.x, pts[iwp[i].endIndex].y - smoothPt.y).clone().rotate((0) * (180.0 / Math.PI)).multiplyNum(scale).addX(renderer.view.width * 0.5).addY(renderer.view.height * 0.5);
-            var curAngle = Math.atan2(endPt.y - startPt.y, endPt.x - startPt.x);
-            var dist = startPt.getDistance(endPt);
-            var scale = dist / iwp[i].origLength;
-            iwp[i].curAngle = curAngle;
+            if (pts.length > 0 && pts[iwp[i].startIndex] && pts[iwp[i].endIndex]) 
+            {
 
-            //console.log(i);
-            //console.log(iwp[i]);
-            //console.log(i + " " + iwp[i].sprite1);
-
-            // if you want to see the images lined up (to spot issues with caching) 
-            // iwp[i].sprite1.anchor.x = 0;
-            // iwp[i].sprite1.anchor.y = 0;
-
-            // iwp[i].sprite1.scale.x =  0.05; //scale*4.0;
-            // iwp[i].sprite1.scale.y =  0.05; ///scale*4.0;
-
-            // iwp[i].sprite1.rotation = 0; //3.14 + (curAngle-iwp[i].origAngle);
-            // iwp[i].sprite1.position.x = i * 25; //startPt.x;
-            // iwp[i].sprite1.position.y = 400; //startPt.y;
-
-            if (!isMobile) {
-                iwp[i].sprite1.scale.x = scale * 4.0;
-                iwp[i].sprite1.scale.y = scale * 4.0;
-            } else {
-                iwp[i].sprite1.scale.x = scale * 5.333;
-                iwp[i].sprite1.scale.y = scale * 5.333;
+                var startPt = new Point(pts[iwp[i].startIndex].x - smoothPt.x, pts[iwp[i].startIndex].y - smoothPt.y).clone().rotate((0) * (180.0 / Math.PI)).multiplyNum(scale).addX(renderer.view.width * 0.5).addY(renderer.view.height * 0.5);
+                var endPt = new Point(pts[iwp[i].endIndex].x - smoothPt.x, pts[iwp[i].endIndex].y - smoothPt.y).clone().rotate((0) * (180.0 / Math.PI)).multiplyNum(scale).addX(renderer.view.width * 0.5).addY(renderer.view.height * 0.5);
+                var curAngle = Math.atan2(endPt.y - startPt.y, endPt.x - startPt.x);
+                var dist = startPt.getDistance(endPt);
+                var scale = dist / iwp[i].origLength;
+                iwp[i].curAngle = curAngle;
+    
+                //console.log(i);
+                //console.log(iwp[i]);
+                //console.log(i + " " + iwp[i].sprite1);
+    
+                // if you want to see the images lined up (to spot issues with caching) 
+                // iwp[i].sprite1.anchor.x = 0;
+                // iwp[i].sprite1.anchor.y = 0;
+    
+                // iwp[i].sprite1.scale.x =  0.05; //scale*4.0;
+                // iwp[i].sprite1.scale.y =  0.05; ///scale*4.0;
+    
+                // iwp[i].sprite1.rotation = 0; //3.14 + (curAngle-iwp[i].origAngle);
+                // iwp[i].sprite1.position.x = i * 25; //startPt.x;
+                // iwp[i].sprite1.position.y = 400; //startPt.y;
+    
+                if (!isMobile) {
+                    iwp[i].sprite1.scale.x = scale * 4.0;
+                    iwp[i].sprite1.scale.y = scale * 4.0;
+                } else {
+                    iwp[i].sprite1.scale.x = scale * 5.333;
+                    iwp[i].sprite1.scale.y = scale * 5.333;
+                }
+    
+                //(1.0 / resolutionScaleFactor);
+    
+                // if (resolutionScaleFactor != 1.0) {
+                //     iwp[i].sprite1.scale.x *= myGui.resScale * (1.0 / iwp[i].lineScale);
+                //     iwp[i].sprite1.scale.y *= myGui.resScale * (1.0 / iwp[i].lineScale);
+    
+                // }
+    
+    
+                iwp[i].sprite1.rotation = 3.14 + (curAngle - iwp[i].origAngle);
+                iwp[i].sprite1.position.x = startPt.x;
+                iwp[i].sprite1.position.y = startPt.y;
+    
+    
+                //imageWithPtsTemp.sprite1.anchor.x = dataobj[lineToAdd]['startPt'].x / 2048.0;
+                //imageWithPtsTemp.sprite1.anchor.y = dataobj[lineToAdd]['startPt'].y / 2020.0;
+    
+    
+    
+                // if (i === iwp.length - 1){
+    
+    
+                //     var x = iwp[i].sprite1.position.x;
+                //     var y = iwp[i].sprite1.position.y;
+    
+                //     var angle = iwp[i].sprite1.rotation;
+    
+                //     //drawing.moveTo(x,y);
+    
+    
+                //     x += iwp[i].midDistance * iwp[i].sprite1.scale.x * 0.25 * Math.cos(0 + iwp[i].curAngle - iwp[i].origAngle + iwp[i].midAngle);
+                //     y += iwp[i].midDistance * iwp[i].sprite1.scale.y * 0.25 * Math.sin(0 + iwp[i].curAngle - iwp[i].origAngle + iwp[i].midAngle);
+    
+    
+                // }
+    
             }
-
-            //(1.0 / resolutionScaleFactor);
-
-            // if (resolutionScaleFactor != 1.0) {
-            //     iwp[i].sprite1.scale.x *= myGui.resScale * (1.0 / iwp[i].lineScale);
-            //     iwp[i].sprite1.scale.y *= myGui.resScale * (1.0 / iwp[i].lineScale);
-
-            // }
-
-
-            iwp[i].sprite1.rotation = 3.14 + (curAngle - iwp[i].origAngle);
-            iwp[i].sprite1.position.x = startPt.x;
-            iwp[i].sprite1.position.y = startPt.y;
-
-
-            //imageWithPtsTemp.sprite1.anchor.x = dataobj[lineToAdd]['startPt'].x / 2048.0;
-            //imageWithPtsTemp.sprite1.anchor.y = dataobj[lineToAdd]['startPt'].y / 2020.0;
-
-
-
-            // if (i === iwp.length - 1){
-
-
-            //     var x = iwp[i].sprite1.position.x;
-            //     var y = iwp[i].sprite1.position.y;
-
-            //     var angle = iwp[i].sprite1.rotation;
-
-            //     //drawing.moveTo(x,y);
-
-
-            //     x += iwp[i].midDistance * iwp[i].sprite1.scale.x * 0.25 * Math.cos(0 + iwp[i].curAngle - iwp[i].origAngle + iwp[i].midAngle);
-            //     y += iwp[i].midDistance * iwp[i].sprite1.scale.y * 0.25 * Math.sin(0 + iwp[i].curAngle - iwp[i].origAngle + iwp[i].midAngle);
-
-
-            // }
-
+    
+            // Keep this on for now since GUI changes won't take affect if we're not rendering
+            // updateGraphics = false;
+            updateGraphics = true;
         }
-
-        // Keep this on for now since GUI changes won't take affect if we're not rendering
-        // updateGraphics = false;
-        updateGraphics = true;
+        renderer.render(stage);
     }
-
-
-
-    renderer.render(stage);
-
-
-
 }
 
 // See which images are popular for people checking out on Google Maps
