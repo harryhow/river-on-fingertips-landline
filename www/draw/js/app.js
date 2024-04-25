@@ -531,21 +531,6 @@ function readTextFile(file, callback) {
 
 
 
-// Update DOM elements with new data
-function updateMetadata(data) {
-    var line1 = data['line-1'] || '';
-    var line2 = data['line-2'] || '';
-    var attribution = data['attribution'] || '';
-    var url = data['url'] || '';
-
-    document.getElementById('info-link').innerHTML = line1 + "<br>" + line2;
-    document.getElementById('info-link').href = url;
-    document.getElementById('info-attribution').innerText = attribution;
-
-    ga('send', 'event', 'Draw', 'draw', data['line-1'] + ' ' + data['line-2']);
-}
-
-
 // this is vp related 
 
 var vptrees = [];
@@ -1630,7 +1615,7 @@ function animate() {
                 if (!textureHasLoaded && pulseComplete) {
                     //console.log('Texture just finished loading!');
                     textureHasLoaded = true;
-                    updateMetadata(matchedMetadata);
+                    //updateMetadata(matchedMetadata);
                     metadataTargetOpacity = 1;
                 }
             }
@@ -1812,7 +1797,7 @@ function animate() {
 
         var infoElem = document.getElementById('info');
         if (Math.abs(metadataTargetOpacity - infoElem.style.opacity) > .01) {
-            infoElem.style.opacity = Utils.lerp(infoElem.style.opacity, metadataTargetOpacity, myGui.metadata);
+            //infoElem.style.opacity = Utils.lerp(infoElem.style.opacity, metadataTargetOpacity, myGui.metadata);
         }
 
 
@@ -1855,13 +1840,4 @@ function animate() {
 
 
 
-}
-
-// See which images are popular for people checking out on Google Maps
-document.getElementById('info-link').onclick = function(e) {
-    ga('send', 'event', {
-        eventCategory: 'Outbound Link',
-        eventAction: 'click',
-        eventLabel: e.target.href
-    });
 }
