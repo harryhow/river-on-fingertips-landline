@@ -1789,6 +1789,9 @@ function animate() {
             sprites[index].position.x = sprites[index].originalPosition.x + circleOffsetX;
             sprites[index].position.y = sprites[index].originalPosition.y + circleOffsetY;
 
+
+
+            
             var scale = sprites[index].originalScale * circleScaleRatio;
 
             //console.log("scale ???? " + sprites[index].originalScale );
