@@ -737,15 +737,15 @@ window.onresize = function(event) {
 
 // Prevent the page from scrolling if swipe up/down with your finger on elements
 // like the Draw/Swipe nav or the metadata info on the bottom
-// document.body.addEventListener('touchmove', function(e) {
-//     e.preventDefault();
-// });
-
 document.body.addEventListener('touchmove', function(e) {
-    if (e.target.classList.contains('no-scroll')) {
-        e.preventDefault();
-    }
-}, { passive: false }); // Ensure this is not passive if you need to call preventDefault
+    e.preventDefault();
+});
+
+// document.body.addEventListener('touchmove', function(e) {
+//     if (e.target.classList.contains('no-scroll')) {
+//         e.preventDefault();
+//     }
+// }, { passive: false }); // Ensure this is not passive if you need to call preventDefault
 
 
 //var targetAngle = 0;
@@ -893,7 +893,7 @@ function loadRandomIntoCache(useBins) {
         imageWithPtsTemp.loadImage(imgDataPath + dataobj[goodOne]['fileName']);
         iwpCache.push(imageWithPtsTemp);
     } else {
-        //console.warn('Invalid data for index', goodOne, 'in dataobj.');
+        console.warn('Invalid data for index', goodOne, 'in dataobj.');
     }
 
 
@@ -1057,7 +1057,7 @@ function addLineFromCache(lineToAddFromCache) {
         diffy = dataobj[lineToAdd]['startPt'].y - dataobj[lineToAdd]['endPt'].y;
         len = Math.sqrt(diffx * diffx + diffy * diffy);
     } else {
-        //console.warn('Invalid startPt or endPt for entry', lineToAdd, 'in dataobj.');
+        console.warn('Invalid startPt or endPt for entry', lineToAdd, 'in dataobj.');
         // Skip this entry by returning early
         iwpCache.splice(loadedCache[lineToAddFromCache].cacheIndex, 1);
         return; // Exit the function early if startPt or endPt is null
@@ -1203,7 +1203,7 @@ function animate() {
 
     //------------------------------------------------------ load into cache: 
     if (frameNum > 0) {
-        if (iwpCache.length < 40 && frameNum % 10 == 0) {
+        if (iwpCache.length < 50 && frameNum % 10 == 0) {
             loadRandomIntoCache(false);
         }
     }
@@ -1318,7 +1318,8 @@ function animate() {
     //while (angleSmooth < 0) angleSmooth += (2 * Math.PI);
 
 
-    var adder = velSmooth * myGui.dragSpeed;
+    //var adder = velSmooth * myGui.dragSpeed;
+    var adder = velSmooth * 0.1;
     //console.log("adding " + adder);
     // console.log("adding " + adder);
 
@@ -1445,8 +1446,12 @@ function animate() {
                     addLineFromCache(minIndex);
                     makeLoadedCache();
                 } else {
-                    addLineFromCache(Math.floor(getRandomArbitrary(0, loadedCache.length)));
-                    makeLoadedCache();
+                    // No matching image found
+                    // Continue showing the previous blurred background
+                    // Do not add any new lines or images
+                    // addLineFromCache(Math.floor(getRandomArbitrary(0, loadedCache.length)));
+                    // makeLoadedCache();
+                    
                 }
 
 
@@ -1508,7 +1513,7 @@ function animate() {
 
 
 
-                var scale = myGui.scale * (1 - velStopEnergy) * (1.0 / drawScaleAmt) + myGui.maxZoom * velStopEnergy * (1.0 / drawScaleAmt);
+                var scale = 0.1 * (1 - velStopEnergy) * (1.0 / drawScaleAmt) + 0.2 * velStopEnergy * (1.0 / drawScaleAmt);
 
 
 
@@ -1574,7 +1579,7 @@ function animate() {
             var w = renderer.view.width;
 
 
-            var scale = myGui.scale * (1 - velStopEnergy) * (1.0 / drawScaleAmt) + myGui.maxZoom * velStopEnergy * (1.0 / drawScaleAmt);
+            var scale = 0.1 * (1 - velStopEnergy) * (1.0 / drawScaleAmt) + 0.1 * velStopEnergy * (1.0 / drawScaleAmt);
 
             var startPt = new Point(pts[iwp[i].startIndex].x - smoothPt.x, pts[iwp[i].startIndex].y - smoothPt.y).clone().rotate((0) * (180.0 / Math.PI)).multiplyNum(scale).addX(renderer.view.width * 0.5).addY(renderer.view.height * 0.5);
             var endPt = new Point(pts[iwp[i].endIndex].x - smoothPt.x, pts[iwp[i].endIndex].y - smoothPt.y).clone().rotate((0) * (180.0 / Math.PI)).multiplyNum(scale).addX(renderer.view.width * 0.5).addY(renderer.view.height * 0.5);
