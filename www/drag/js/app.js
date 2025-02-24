@@ -324,12 +324,43 @@ function readTextFile(file, callback) {
 // Update DOM elements with new data
 function updateMetadata(data) {
 
-    // var line1 = data['line-1'] || '';
-    // var line2 = data['line-2'] || '';
-    // var attribution = data['attribution'] || '';
-    // var url = data['url'] || '';
 
+    var infoLine1 = document.getElementById('info-line1');
+    var infoLine2 = document.getElementById('info-line2');
+    var infoLink = document.getElementById('info-link');
+    var infoAttribution = document.getElementById('info-attribution');
+
+        if (!data) {
+        console.warn("updateMetadata: No metadata found, showing default message.");
+        infoLine1.textContent = "😬 這張地圖的描述暫時還找不到喔....";
+        infoLine2.textContent = "";
+        infoAttribution.textContent = "";
+        infoLink.href = "";
+        infoLink.textContent = "";
+        return;
+    }
+
+    if (!infoLine1 || !infoLine2 || !infoLink || !infoAttribution) {
+        console.error("updateMetadata: Missing HTML elements.");
+        return;
+    }
+
+    infoLine1.textContent = data['line-1'] || 'N/A';
+    infoLine2.textContent = data['line-2'] || 'N/A';
+    infoAttribution.textContent = data['attribution'] || 'Attribution Missing';
+
+    if (data.url) {
+        infoLink.href = data.url;
+        infoLink.textContent = "";
+    } else {
+        infoLink.href = "";
+        infoLink.textContent = "";
+    }
 }
+
+
+
+
 
 // Load metadata
 var metadata = {};
@@ -433,36 +464,37 @@ var guiSettings = {
 
 var imgDataPath;
 var dataobjPath;
+var metadataPath;
 
 window.onload = function() {
-
     console.log("drag-app.js: " + imgDataSwitch);
 
     if (imgDataSwitch === '#drag-a') {
         isDevMode = true;
         imgDataPath = 'landdata/a_takoham/';
         dataobjPath = 'landdata/dataobj-a.json';
+        metadataPath = 'metadata/a_takoham_meta/';
     }
     else if (imgDataSwitch === '#drag-b') {
         imgDataPath = 'landdata/b_xindian/';
         dataobjPath = 'landdata/dataobj-b.json';
+        metadataPath = 'metadata/b_xindian_meta/';
     }
     else if (imgDataSwitch === '#drag-c') {
         imgDataPath = 'landdata/c_keelung/';
         dataobjPath = 'landdata/dataobj-c.json';
+        metadataPath = 'metadata/c_keelung_meta/';
     }
 
-    // Move the readTextFile function call inside the window.onload event handler
-    // Usage:
-    // readTextFile("https://storage.googleapis.com/navigator-media-usa/media/connected_line/v2/site/www/drag/dataobj.json", function(code, data)
-    readTextFile(dataobjPath, function(code, data) 
-    { //www/drag/landdata/dataobj-all.json
+    console.log("Metadata path set to:", metadataPath);
+
+    // Load the data object JSON
+    readTextFile(dataobjPath, function(code, data) {
         console.log("loading data...");
         dataobj = JSON.parse(data);
-
         console.log(dataobj);
 
-        // calculate and sort the angle length
+        // Process and sort data
         for (var i = 0; i < dataobj.length; i++) {
             var startAngle = 0;
             for (var j = 0; j < dataobj[i].angleDiffs.length; j++) {
@@ -476,7 +508,6 @@ window.onload = function() {
         });
 
         console.log("done loading text");
-
         loadedJson = true;
     });
 
@@ -974,7 +1005,7 @@ stage.mousemove = stage.touchmove = function(moveData) {
 
         if (firstTouch) {
             firstTouch = false;
-            //updateMetadata(matchedMetadata);
+            updateMetadata(matchedMetadata);
             //loading
             //document.body.removeChild(document.getElementById('instruction'));  
             //console.log(document.getElementById('loading'))
@@ -1023,107 +1054,70 @@ animate();
 
 var timef = 0;
 
-
 function addLineFromCache(lineToAddFromCache) {
-
-
-
-    //console.log("in add line from cache loaded len : " + loadedCache.length + " " + lineToAddFromCache);
-
     var lineToAdd = loadedCache[lineToAddFromCache].index;
 
-    // var metaFilename = dataobj[lineToAdd].fileName.replace('jpg', 'json');
-    // readTextFile('metadata/' + metaFilename.substr(0, 1) + '/' + metaFilename, updateMetadataCallback);
     var filename = dataobj[lineToAdd].fileName;
-
-
     lastFilename = filename;
 
     var id = filename.substr(0, filename.length - 4);
-    if (firstTouch) {
-        matchedMetadata = metadata[id];
+    var metaFilename = filename.replace('.jpg', '.json');
 
-        updateMetadata(matchedMetadata);
-    } else {
-        //console.log(id + " " + filename );
-        updateMetadata(metadata[id]);
-    }
+    // Dynamically load metadata from the correct folder
+    var metadataFilePath = metadataPath + metaFilename;
+    console.log("Loading metadata from:", metadataFilePath);
+
+    readTextFile(metadataFilePath, function(code, response) {
+        if (code === 200) {
+            var metadata = JSON.parse(response);
+            updateMetadata(metadata);
+        } else {
+            console.warn("Metadata not found for", metaFilename);
+            updateMetadata(null); // Display default message if metadata is missing
+        }
+    });
 
     var diffx, diffy, len;
 
-    // Check if dataobj[lineToAdd]['startPt'] and dataobj[lineToAdd]['endPt'] are not null
     if (dataobj[lineToAdd]['startPt'] && dataobj[lineToAdd]['endPt']) {
         diffx = dataobj[lineToAdd]['startPt'].x - dataobj[lineToAdd]['endPt'].x;
         diffy = dataobj[lineToAdd]['startPt'].y - dataobj[lineToAdd]['endPt'].y;
         len = Math.sqrt(diffx * diffx + diffy * diffy);
     } else {
         console.warn('Invalid startPt or endPt for entry', lineToAdd, 'in dataobj.');
-        // Skip this entry by returning early
         iwpCache.splice(loadedCache[lineToAddFromCache].cacheIndex, 1);
-        return; // Exit the function early if startPt or endPt is null
+        return;
     }
-
-
-    var diffx = dataobj[lineToAdd]['startPt'].x - dataobj[lineToAdd]['endPt'].x;
-    var diffy = dataobj[lineToAdd]['startPt'].y - dataobj[lineToAdd]['endPt'].y;
-    var len = Math.sqrt(diffx * diffx + diffy * diffy);
 
     if (pts.length == 0) {
         pts[0] = new Point(300, 300);
     }
 
     var startPt = pts.length - 1;
-
-    var scaleMe = 1.0;
-    if (myGui.variableSizes === true) {
-        scaleMe = 0.75 + (Math.random() * 0.5);
-    }
+    var scaleMe = myGui.variableSizes ? (0.75 + Math.random() * 0.5) : 1.0;
 
     for (var i = 0; i < dataobj[lineToAdd]['angleDiffs'].length; i++) {
         myAngle += dataobj[lineToAdd]['angleDiffs'][i];
         var p = pts[pts.length - 1];
-        var newp = new Point(p.x + (300.0 / dataobj[lineToAdd]['angleDiffs'].length) * scaleMe * Math.cos(myAngle), p.y + (300.0 / dataobj[lineToAdd]['angleDiffs'].length) * scaleMe * Math.sin(myAngle));
+        var newp = new Point(
+            p.x + (300.0 / dataobj[lineToAdd]['angleDiffs'].length) * scaleMe * Math.cos(myAngle),
+            p.y + (300.0 / dataobj[lineToAdd]['angleDiffs'].length) * scaleMe * Math.sin(myAngle)
+        );
         pts.push(newp);
     }
 
     var endPt = pts.length - 1;
-
     var imageWithPtsTemp = loadedCache[lineToAddFromCache];
     imageWithPtsTemp.startIndex = startPt;
     imageWithPtsTemp.endIndex = endPt;
 
-    /*
-    imageWithPtsTemp.texture = PIXI.Texture.fromImage('imgsQuarterRes/' + dataobj[lineToAdd]['fileName']);
-    imageWithPtsTemp.sprite1 = new PIXI.Sprite(imageWithPtsTemp.texture );
-    */
     imageWithPtsTemp.sprite1.alpha = 0.0;
-
     imageWithPtsTemp.sprite1.anchor.x = dataobj[lineToAdd]['startPt'].x / 2048.0;
     imageWithPtsTemp.sprite1.anchor.y = dataobj[lineToAdd]['startPt'].y / 2020.0;
-    //console.log(imageWithPtsTemp.sprite1.anchor.x + " " + imageWithPtsTemp.sprite1.anchor.y);
-
 
     imageWithPtsTemp.origLength = len;
     imageWithPtsTemp.origAngle = Math.atan2(diffy, diffx);
 
-
-    diffx = dataobj[lineToAdd]['startPt'].x - 2048 / 2;
-    diffy = dataobj[lineToAdd]['startPt'].y - 2020 / 2;
-
-    imageWithPtsTemp.midAngle = Math.atan2(diffy, diffx);
-    imageWithPtsTemp.midDistance = Math.sqrt(diffx * diffx + diffy * diffy);
-
-    imageWithPtsTemp.lineScale = len / 2876.0;
-
-    //console.log("sprite " + lineToAddFromCache + " width "  + imageWithPtsTemp.sprite1.width);
-
-
-    //container.addChild(imageWithPtsTemp.sprite1);
-    //stage.removeChild(drawing);
-    //stage.addChild(drawing);
-    //stage.addChild(imageWithPtsTemp.texture);   
-
-    // IWP     
     iwp.push(imageWithPtsTemp);
     while (iwp.length > 15) {
         container.removeChild(iwp[0].sprite1);
@@ -1132,19 +1126,16 @@ function addLineFromCache(lineToAddFromCache) {
         iwp.splice(0, 1);
     }
 
-    // now, let's remove and add childs again. 
-
     for (var i = 0; i < iwp.length; i++) {
         container.removeChild(iwp[i].sprite1);
         container.addChild(iwp[i].sprite1);
     }
 
-
     loadRandomIntoCache(true);
-
-    iwpCache.splice(loadedCache[lineToAddFromCache].cacheIndex, 1); // we need to know where we are in the cache array (diff then loaded aray)
-
+    iwpCache.splice(loadedCache[lineToAddFromCache].cacheIndex, 1);
 }
+
+
 
 function getRandomArbitrary(min, max) {
     return Math.random() * (max - min) + min;

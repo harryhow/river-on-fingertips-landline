@@ -530,6 +530,58 @@ function readTextFile(file, callback) {
 }
 
 
+function updateMetadata(data) {
+    if (!data) {
+        console.error("updateMetadata: No metadata found for this match.");
+        return;
+    }
+
+    // Get elements from index.html
+    var infoLine1 = document.getElementById('info-line1');
+    var infoLine2 = document.getElementById('info-line2');
+    var infoLink = document.getElementById('info-link');
+    var infoAttribution = document.getElementById('info-attribution');
+
+    if (!infoLine1 || !infoLine2 || !infoLink || !infoAttribution) {
+        console.error("updateMetadata: Some info elements are missing in the HTML.");
+        return;
+    }
+
+    // Update the elements
+    infoLine1.textContent = data['line-1'] || 'N/A';
+    infoLine2.textContent = data['line-2'] || 'N/A';
+    infoAttribution.textContent = data['attribution'] || 'Attribution Missing';
+
+    // Set the link (if a URL is provided)
+    if (data.url) {
+        infoLink.href = data.url;
+        infoLink.textContent = "";
+    } else {
+        infoLink.href = "";
+        infoLink.textContent = "";
+    }
+}
+
+function resetMetadata() {
+    var infoLine1 = document.getElementById('info-line1');
+    var infoLine2 = document.getElementById('info-line2');
+    var infoLink = document.getElementById('info-link');
+    var infoAttribution = document.getElementById('info-attribution');
+
+    if (!infoLine1 || !infoLine2 || !infoLink || !infoAttribution) {
+        console.error("resetMetadata: Some info elements are missing in the HTML.");
+        return;
+    }
+
+    // Reset text to indicate no match found yet
+    infoLine1.textContent = "暫時找不到！";
+    infoLine2.textContent = "請再畫一條線試試看！";
+    infoLink.href = "";
+    infoLink.textContent = "";
+    infoAttribution.textContent = "";
+}
+
+
 
 // this is vp related 
 
@@ -628,7 +680,10 @@ function loadVPTree(code, data) {
 var vpTreeToLoad = 0;
 //readTextFile('https://storage.googleapis.com/navigator-media-usa/media/connected_line/v2/site/www/draw/data/' + vpTreeToLoad + '.json', loadVPTree);
 //readTextFile('https://storage.googleapis.com/river_on_finger_tips_landline/vp-tree-construct.json', loadVPTree);
+//readTextFile('./data/vp-tree-construct.json', loadVPTree);
 readTextFile('./data/vp-tree-loaded-0.json', loadVPTree);
+//vp-tree-construct
+//vp-tree-loaded-0
 //----------------------------------------------------------
 
 
@@ -645,13 +700,14 @@ var metadataIDList = [];
 // });
 
 /// harry: test file and loaded from local
+// harryho: switch to differnt JSON setting for different session - #draw-a, #draw-b and #draw-c
 
-readTextFile('./data/metadata-id-list.json', function(code, data) {
-    metadataIDList = JSON.parse(data);
-});
-readTextFile('./data/metadata-converted.json', function(code, data) {
-    metadata = JSON.parse(data);
-});
+// readTextFile('./data/metadata-id-list-test.json', function(code, data) {
+//     metadataIDList = JSON.parse(data);
+// });
+// readTextFile('./data/metadata-converted-test.json', function(code, data) {
+//     metadata = JSON.parse(data);
+// });
 
 
 
@@ -772,15 +828,39 @@ window.onload = function() {
 
     console.log("draw-app.js: " + imgDataSwitch);
 
+    let metadataIDListFile = "";
+    let metadataFile = "";
+
     if (imgDataSwitch === '#draw-a') {
+        metadataIDListFile = './data/metadata-id-list-a.json';
+        metadataFile = './data/metadata-converted-a.json';
         imgDataUrl = 'landdata/a_takoham/';
     }
     else if (imgDataSwitch === '#draw-b') {
+        metadataIDListFile = './data/metadata-id-list-b.json';
+        metadataFile = './data/metadata-converted-b.json';
         imgDataUrl = 'landdata/b_xindian/';
     }
     else if (imgDataSwitch === '#draw-c') {
+        metadataIDListFile = './data/metadata-id-list-c.json';
+        metadataFile = './data/metadata-converted-c.json';
         imgDataUrl = 'landdata/c_keelung/';
+    } else {
+        // Default to test data if no session hash is set
+        metadataIDListFile = './data/metadata-id-list-test.json';
+        metadataFile = './data/metadata-converted-test.json';
     }
+
+    // Load the metadata JSON files dynamically
+    readTextFile(metadataIDListFile, function(code, data) {
+        metadataIDList = JSON.parse(data);
+        console.log("Loaded Metadata ID List from:", metadataIDListFile);
+    });
+
+    readTextFile(metadataFile, function(code, data) {
+        metadata = JSON.parse(data);
+        console.log("Loaded Metadata from:", metadataFile);
+    });
     
 
     if (isDevMode) {
@@ -1073,6 +1153,9 @@ stage.mousedown = stage.touchstart = function(moveData) {
     drawingAlpha = 1.0;
     drawingAlphaTarget = 1.0;
 
+       // === Reset Metadata Display ===
+       resetMetadata();
+
 };
 
 stage.mousemove = stage.touchmove = function(moveData) {
@@ -1206,9 +1289,9 @@ function getBestMatch(ptsToTest) {
     for (var i = 0; i < vptrees.length; i++) {
 
         var multiResultsA = vptrees[i].search(p, 1);
-        //console.log('multiResultsA:', multiResultsA[0]);
+        console.log('multiResultsA:', multiResultsA[0]);
         var multiResultsB = vptrees[i].search(p2, 1);
-        //console.log('multiResultsB:', multiResultsB[0]);
+        console.log('multiResultsB:', multiResultsB[0]);
 
         if (i === 0) {
             resultsA = multiResultsA;
@@ -1357,12 +1440,20 @@ stage.mouseup = stage.mouseupoutside = stage.touchend = stage.touchendoutside = 
     console.log("loading metadata for id " + id);
     // Convert filename-based ID to "real" ID from spreadsheet
 
-
-    id = metadataIDList[id].toString();
+    // Harry: mapping indexing JSON records
+    id = metadataIDList[id - 1].toString();
     matchedMetadata = metadata[id];
 
     angleMatch = bestAngle;
     updateGraphics = true;
+
+
+    if (!matchedMetadata) {
+        console.warn(`No metadata found for ID: ${id}`);
+    }
+
+    // Call updateMetadata() to show metadata in the info div
+    updateMetadata(matchedMetadata);
 
 
     //console.log('TextureCache:', PIXI.utils.TextureCache);
@@ -1615,7 +1706,7 @@ function animate() {
                 if (!textureHasLoaded && pulseComplete) {
                     //console.log('Texture just finished loading!');
                     textureHasLoaded = true;
-                    //updateMetadata(matchedMetadata);
+                    updateMetadata(matchedMetadata);
                     metadataTargetOpacity = 1;
                 }
             }
